@@ -3,18 +3,18 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 );
 
 export const useSupabaseAuth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [claims, setClaims] = useState(null);
+  // Tipamos claims explícitamente para evitar problemas de "any"
+  const [claims, setClaims] = useState<unknown>(null); 
   const [verifying, setVerifying] = useState(false);
   const [authError, setAuthError] = useState("");
   const [authSuccess, setAuthSuccess] = useState(false);
 
-  // Check URL params on initial render
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token_hash = params.get("token_hash");
@@ -23,35 +23,35 @@ export const useSupabaseAuth = () => {
     if (token_hash) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setVerifying(true);
-      // Verify the OTP token
+      
       supabase.auth
         .verifyOtp({
           token_hash,
-          type: type || "email",
+          // Forzamos el tipo explícito para verifyOtp según la API de Supabase
+          type: (type as "email" | "magiclink" | "signup" | "invite" | "recovery") || "email",
         })
         .then(({ error }) => {
           if (error) {
             setAuthError(error.message);
           } else {
             setAuthSuccess(true);
-            // Clear URL params
             window.history.replaceState({}, document.title, "/");
           }
           setVerifying(false);
         });
     }
 
-    // Check for existing session using getClaims
-    supabase.auth.getClaims().then(({ data: { claims } }) => {
-      setClaims(claims);
+    // CORRECCIÓN 1: Manejo seguro de nulos con Optional Chaining (?.)
+    supabase.auth.getClaims().then(({ data }) => {
+      setClaims(data?.claims || null);
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
-      supabase.auth.getClaims().then(({ data: { claims } }) => {
-        setClaims(claims);
+      // CORRECCIÓN 1: Manejo seguro de nulos aquí también
+      supabase.auth.getClaims().then(({ data }) => {
+        setClaims(data?.claims || null);
       });
     });
 
@@ -61,17 +61,21 @@ export const useSupabaseAuth = () => {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
+    
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: window.location.origin,
       },
     });
+    
     if (error) {
-      alert(error.error_description || error.message);
+      // CORRECCIÓN 2: Supabase v2 AuthError solo utiliza 'message'
+      alert(error.message);
     } else {
       alert("Check your email for the login link!");
     }
+    
     setLoading(false);
   };
 
