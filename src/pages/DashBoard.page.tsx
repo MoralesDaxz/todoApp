@@ -36,6 +36,8 @@ export const DashBoard = () => {
         {user?.email?.substring(0, 1).toLocaleUpperCase()}
       </article>
       <h1 className="text-center">Panel de control</h1>
+<div className="flex flex-col items-center lg:flex lg:justify-center gap-2">
+
 
       <div className="flex gap-2">
         {/* Crear Lista */}
@@ -86,6 +88,7 @@ export const DashBoard = () => {
           {lists.length === 0 && <p>No tienes listas aún.</p>}
         </ul>
       </div>
+</div>
     </section>
   );
 };

@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-);
+import { supabase } from "../config/supabase/supabaseClient";
 
 export const useSupabaseAuth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   // Tipamos claims explícitamente para evitar problemas de "any"
-  const [claims, setClaims] = useState<unknown>(null); 
+  const [claims, setClaims] = useState<unknown>(null);
   const [verifying, setVerifying] = useState(false);
   const [authError, setAuthError] = useState("");
   const [authSuccess, setAuthSuccess] = useState(false);
@@ -23,12 +18,18 @@ export const useSupabaseAuth = () => {
     if (token_hash) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setVerifying(true);
-      
+
       supabase.auth
         .verifyOtp({
           token_hash,
           // Forzamos el tipo explícito para verifyOtp según la API de Supabase
-          type: (type as "email" | "magiclink" | "signup" | "invite" | "recovery") || "email",
+          type:
+            (type as
+              | "email"
+              | "magiclink"
+              | "signup"
+              | "invite"
+              | "recovery") || "email",
         })
         .then(({ error }) => {
           if (error) {
@@ -61,21 +62,21 @@ export const useSupabaseAuth = () => {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: window.location.origin,
       },
     });
-    
+
     if (error) {
       // CORRECCIÓN 2: Supabase v2 AuthError solo utiliza 'message'
       alert(error.message);
     } else {
       alert("Check your email for the login link!");
     }
-    
+
     setLoading(false);
   };
 
