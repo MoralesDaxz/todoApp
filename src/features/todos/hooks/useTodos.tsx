@@ -6,13 +6,15 @@ import type { Todo } from '../../../types/todo';
 
 export const useTodos = (currentListId: string | null) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+
   const fetchTodos = useCallback(async () => {
     if (!currentListId) return;
     
     const { data, error } = await supabase
       .from('todos')
       .select('*')
-      .eq('list_id', currentListId);
+      .eq('list_id', currentListId)
+      .order('created_at', { ascending: false });;
       
     if (!error && data) setTodos(data);
   }, [currentListId]);
@@ -28,5 +30,5 @@ export const useTodos = (currentListId: string | null) => {
     else fetchTodos();
   };
 
-  return { todos, fetchTodos, markAsDoneByUser, confirmTodo };
+ return { todos, setTodos, fetchTodos, markAsDoneByUser, confirmTodo };
 };

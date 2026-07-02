@@ -9,9 +9,8 @@ export const ToDo = () => {
   const { listId } = useParams<{ listId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { todos, fetchTodos, markAsDoneByUser, confirmTodo } = useTodos(
-    listId || null,
-  );
+  const { todos, setTodos, fetchTodos, markAsDoneByUser, confirmTodo } =
+    useTodos(listId || null);
   const { generateInviteCode } = useLists();
 
   const [listDetails, setListDetails] = useState<{
@@ -50,16 +49,24 @@ export const ToDo = () => {
 
   const handleAddTask = async () => {
     if (!newTaskText.trim() || !listId || !user) return;
-    await supabase.from("todos").insert([
-      {
-        list_id: listId,
-        task: newTaskText,
-        status: "pending",
-        created_by: user.id,
-      },
-    ]);
-    setNewTaskText("");
-    fetchTodos();
+    const newTask = {
+      list_id: listId,
+      task: newTaskText,
+      status: "pending",
+      created_by: user.id,
+      created_at: new Date().toISOString(), // Añadir fecha local para orden temporal
+    };
+    const { data, error } = await supabase
+      .from("todos")
+      .insert([newTask])
+      .select()
+      .single();
+    if (!error && data) {
+      // Actualización optimista: añade la nueva tarea al principio del array actual
+      setTodos((prev) => [data, ...prev]);
+      setNewTaskText("");
+      fetchTodos(); // Forzamos un fetch para sincronizar con la BD
+    }
   };
 
   if (!listDetails) return <div>Cargando lista...</div>;
