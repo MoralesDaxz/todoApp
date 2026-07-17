@@ -2,12 +2,21 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../config/supabase/supabaseClient";
 import { fetchTodos, addTodo } from "../api/todoService";
 
+export interface Todo {
+  id: string;
+  list_id: string;
+  task: string;
+  status: "pending" | "done_by_user" | "confirmed";
+  created_by: string;
+  created_at?: string; // Opcional dependiendo de si siempre lo pides en el select
+}
+
 export const useTodos = (listId: string | null) => {
   const queryClient = useQueryClient();
 
   // 1. SOLUCIÓN AL ERROR {...}: Configuración completa del Query
-  const { data: todos = [], isLoading } = useQuery({
-    queryKey: ['todos', listId],
+  const { data: todos = [], isLoading } = useQuery<Todo[], Error>({
+    queryKey: ["todos", listId],
     queryFn: () => fetchTodos(listId!),
     enabled: !!listId, // Solo se ejecuta si hay un listId válido
   });
@@ -15,7 +24,7 @@ export const useTodos = (listId: string | null) => {
   const addMutation = useMutation({
     mutationFn: addTodo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos', listId] });
+      queryClient.invalidateQueries({ queryKey: ["todos", listId] });
     },
   });
 
@@ -33,7 +42,7 @@ export const useTodos = (listId: string | null) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos', listId] });
+      queryClient.invalidateQueries({ queryKey: ["todos", listId] });
     },
   });
 
@@ -49,15 +58,15 @@ export const useTodos = (listId: string | null) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos', listId] });
+      queryClient.invalidateQueries({ queryKey: ["todos", listId] });
     },
   });
 
-  return { 
-    todos, 
-    isLoading, 
-    addMutation, 
-    markAsDoneMutation, 
-    confirmMutation 
+  return {
+    todos,
+    isLoading,
+    addMutation,
+    markAsDoneMutation,
+    confirmMutation,
   };
 };
