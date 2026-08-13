@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useLists } from "../features/todos/hooks/useLists";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
+import { FaList, FaListCheck } from "react-icons/fa6";
+import { TbEdit, TbPointFilled } from "react-icons/tb";
 import LogUser from "../components/UI/LogUser";
 
 export const DashBoard = () => {
@@ -21,47 +23,42 @@ export const DashBoard = () => {
 
   return (
     <>
-      <section className="min-w-85">
-        <h1 className="text-center">Lista de tareas</h1>
+      <section className="w-full px-6 pt-4 flex flex-col">
+        <h1 className="text-center text-4xl my-8 font-medium">Gestiones</h1>
         <LogUser />
 
-        <div className="flex flex-col items-center gap-2">
-          <div className="border p-[15px] rounded-lg flex flex-col gap-3">
-            <h3>Crear Nueva Lista</h3>
-            <input
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              placeholder="Nombre de la lista"
-            />
-            <button
-              disabled={createMutation.isPending}
-              onClick={handleCreateList}
-            >
-              {createMutation.isPending ? "Creando..." : "Crear"}
-            </button>
-          </div>
+        <div className="w-fit p-1 rounded-lg self-center flex items-center bg-gray-700">
+          <input
+            className="outline-none text-xl"
+            value={newListName}
+            onChange={(e) => setNewListName(e.target.value)}
+            placeholder="Dame un título."
+          />
+
+          <button
+            className="bg-blue-400 p-3 rounded-sm text-[1rem] font-medium"
+            disabled={createMutation.isPending}
+            onClick={handleCreateList}
+          >
+            {createMutation.isPending ? "Creando..." : "Crear"}
+          </button>
         </div>
 
-        <div className="flex flex-col items-center gap-3 mt-6">
-          <h2>Mis Listas de Tareas</h2>
-          <ul>
-            {lists.map((list) => (
-              <li
-                key={list.id}
-                className="flex justify-between items-center mb-2.5"
-              >
-                {list.owner_id === user?.id ? "📝" : "🕶"}
-                <strong>{list.name}</strong>
-                <button
-                  className="ml-2.5"
-                  onClick={() => navigate(`/todo/${list.id}`)}
-                >
-                  Abrir
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* {list.owner_id === user?.id ? <FaList /> : "🕶"} */}
+        <ul className="w-full self-center mt-10">
+          {lists.map((list) => (
+            <li
+              key={list.id}
+              className="flex justify-between items-center mb-2.5 text-[1.2rem] bg-gray-950  p-3 rounded-sm cursor-pointer"
+              onClick={() => navigate(`/todo/${list.id}`)}
+            >
+              {/* {list.owner_id === user?.id ? "📝" : "🕶"} */}
+              <p>{list.name}</p>
+
+              <TbEdit className="h-6 w-6"/>
+            </li>
+          ))}
+        </ul>
       </section>
     </>
   );
