@@ -1,18 +1,24 @@
 @import "tailwindcss";
 :root {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  background-image: linear-gradient(
+    0deg,
+    #000000 0%,
+    rgba(1, 15, 31, 0.87) 79%
+  );
 }
 body {
+
   color: #e1e0e2;
-  background-color: #000;
-
+  min-height: 100dvh;
   font-family: "Roboto", sans-serif;
-
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -24,9 +30,7 @@ body {
   box-sizing: border-box;
 }
 
-
-
-h1 {
+/* h1 {
   font-size:xx-large;
   font-weight: 500;
 }
@@ -41,14 +45,11 @@ h3 {
 h4 {
   font-size: small;
   font-weight: 300;
-}
-button{
-  padding: 5px;
-  border: solid 2px white;
-  border-radius: 12px;
+} */
+button {
   cursor: pointer;
   transition: all 0.3s;
 }
-button:hover{
-  opacity: 70%;
+button:hover {
+  opacity: 85%;
 }

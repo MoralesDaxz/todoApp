@@ -1,94 +1,72 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLists } from "../features/todos/hooks/useLists";
-import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
-import { supabase } from "../config/supabase/supabaseClient";
+import { TbEdit } from "react-icons/tb";
+import LogUser from "../components/UI/LogUser";
+import { formatRelativeTime } from "../utils/date";
 
 export const DashBoard = () => {
-  const { lists, fetchMyLists, joinListWithCode } = useLists();
-  const { user } = useAuth();
+  const { lists, isLoading, createMutation } = useLists();
+  console.log(lists);
+  
   const navigate = useNavigate();
 
-  const [inviteCode, setInviteCode] = useState("");
   const [newListName, setNewListName] = useState("");
 
-  useEffect(() => {
-    fetchMyLists();
-  }, [lists, fetchMyLists]);
-
-  const handleCreateList = async () => {
-    if (!newListName.trim() || !user) return;
-    const { error } = await supabase
-      .from("lists")
-      .insert([{ name: newListName, owner_id: user.id }]);
-    if (!error) {
-      setNewListName("");
-      fetchMyLists();
-    }
+  const handleCreateList = () => {
+    if (!newListName.trim()) return;
+    createMutation.mutate(newListName);
+    setNewListName("");
   };
 
+  if (isLoading) return <div>Cargando listas...</div>;
+// 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
+  const sortedLists = [...lists].sort((a, b) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
   return (
-    <section className="py-2 flex-col">
-      <article
-        title={user?.email}
-        className="absolute top-2 right-2 text-sm py-2 px-3 rounded-[50%] bg-[#5a1ee6] flex flex-col gap-3"
-      >
-        {user?.email?.substring(0, 1).toLocaleUpperCase()}
-      </article>
-      <h1 className="text-center">Panel de control</h1>
-<div className="flex flex-col items-center lg:flex lg:justify-center gap-2">
+    <>
+      <section className="w-full px-6 pt-4 flex flex-col">
+        <h1 className="text-center text-4xl my-8 font-medium">Gestiones</h1>
+        <LogUser />
 
-
-      <div className="flex gap-2">
-        {/* Crear Lista */}
-        <div className="border border-[#ccc] p-[15px] rounded-lg flex flex-col gap-3">
-          <h3>Crear Nueva Lista</h3>
+        <div className="border-2 border-gray-400 w-fit p-1 rounded-md self-center flex items-center bg-gray-700">
           <input
+            className="outline-none text-xl"
             value={newListName}
             onChange={(e) => setNewListName(e.target.value)}
-            placeholder="Nombre de la lista"
+            placeholder="Dame un título."
           />
-          <button onClick={handleCreateList}>Crear</button>
-        </div>
 
-        {/* Unirse a Lista */}
-        <div className="border border-[#ccc] p-[15px] rounded-lg flex flex-col gap-3">
-          <h3>Unirse con Código</h3>
-          <input
-            value={inviteCode}
-            onChange={(e) => setInviteCode(e.target.value)}
-            placeholder="Pega el código UUID aquí"
-          />
           <button
-            onClick={() => {
-              joinListWithCode(inviteCode);
-              setInviteCode("");
-            }}
+            className="bg-blue-400 p-3 rounded-md text-[1rem] font-medium"
+            disabled={createMutation.isPending}
+            onClick={handleCreateList}
           >
-            Unirme
+            {createMutation.isPending ? "Creando..." : "Crear"}
           </button>
         </div>
-      </div>
 
-      <div className="flex flex-col items-center gap-3 mt-6">
-        <h2>Mis Listas de Tareas</h2>
-        <ul >
-          {lists.map((list) => (
-            <li key={list.id} className="flex justify-between items-center mb-2.5">
-              {list.owner_id === user?.id ? "📝" : "🕶"}
-              <strong>{` ${list.name}`}</strong>
-              <button
-                className="ml-2.5"
-                onClick={() => navigate(`/todo/${list.id}`)}
-              >
-                Abrir
-              </button>
+        {/* {list.owner_id === user?.id ? <FaList /> : "🕶"} */}
+       <ul className="w-full self-center mt-10">
+         {sortedLists.map((list) => (
+            <li
+              key={list.id}
+              className="flex justify-between items-center mb-2.5 text-[1.2rem] border-2 border-gray-600 p-3 rounded-md cursor-pointer backdrop-brightness-80 shadow-2xl hover:bg-gray-800 transition-colors"
+              onClick={() => navigate(`/todo/${list.id}`)}
+            >
+              <div className="flex flex-col">
+                <p className="font-medium">{list.name}</p>
+                <span className="text-[0.8rem] text-gray-400">
+                  {formatRelativeTime(list.created_at)}
+                </span>
+              </div>
+
+              <TbEdit className="h-6 w-6 text-gray-300" />
             </li>
           ))}
-          {lists.length === 0 && <p>No tienes listas aún.</p>}
         </ul>
-      </div>
-</div>
-    </section>
+      </section>
+    </>
   );
 };
