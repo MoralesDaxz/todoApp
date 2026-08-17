@@ -16,6 +16,8 @@ const Login = () => {
     authSuccess,
     handleLogin,
     clearAuthError,
+    setNickname,
+    nickname,
   } = useSupabaseAuth();
 
   if (verifying) {
@@ -38,6 +40,8 @@ const Login = () => {
 
   return (
     <LoginForm
+      nickname={nickname}
+      setNickname={setNickname}
       email={email}
       setEmail={setEmail}
       loading={loading}

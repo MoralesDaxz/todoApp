@@ -3,8 +3,8 @@ import { supabase } from "../config/supabase/supabaseClient";
 
 export const useSupabaseAuth = () => {
   const [loading, setLoading] = useState(false);
+  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
-  // Tipamos claims explícitamente para evitar problemas de "any"
   const [claims, setClaims] = useState<unknown>(null);
   const [verifying, setVerifying] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -50,7 +50,6 @@ export const useSupabaseAuth = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
-      // CORRECCIÓN 1: Manejo seguro de nulos aquí también
       supabase.auth.getClaims().then(({ data }) => {
         setClaims(data?.claims || null);
       });
@@ -61,20 +60,28 @@ export const useSupabaseAuth = () => {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (!nickname.trim()) {
+      alert("Por favor, ingresa un apodo.");
+      return;
+    }
+
     setLoading(true);
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: window.location.origin,
+        data: {
+          nickname: nickname.trim(), // 2. Se guarda en user_metadata
+        },
       },
     });
 
     if (error) {
-      // CORRECCIÓN 2: Supabase v2 AuthError solo utiliza 'message'
       alert(error.message);
     } else {
-      alert("Check your email for the login link!");
+      alert("¡Revisa tu correo para el enlace de acceso!");
     }
 
     setLoading(false);
@@ -101,5 +108,7 @@ export const useSupabaseAuth = () => {
     handleLogin,
     handleLogout,
     clearAuthError,
+    setNickname,
+    nickname
   };
 };

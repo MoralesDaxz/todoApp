@@ -6,9 +6,10 @@ import LogUser from "../components/UI/LogUser";
 import { formatRelativeTime } from "../utils/date";
 
 export const DashBoard = () => {
+
+
   const { lists, isLoading, createMutation } = useLists();
-  console.log(lists);
-  
+
   const navigate = useNavigate();
 
   const [newListName, setNewListName] = useState("");
