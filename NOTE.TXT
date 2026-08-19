@@ -1,0 +1,31 @@
+Mejoras de Seguridad para el Logout (Cierre de Sesión)
+Invalidación en el Servidor (signOut({ scope: 'global' })):
+
+Supabase permite especificar el alcance del cierre de sesión. Al usar el modo por defecto o global, el refreshToken queda completamente revocado en los servidores de Supabase, impidiendo que una sesión robada o clonada en otro navegador siga activa.
+
+Limpieza total del almacenamiento local (localStorage / sessionStorage):
+
+El cliente de Supabase se encarga de borrar las llaves de autenticación del almacenamiento web local. Además, reseteamos todos los estados en memoria (claims, email, nickname) para no dejar ningún dato sensible disponible en la memoria de React.
+
+Navegación sin historial (replace: true):
+
+Al hacer el redireccionamiento tras el cierre de sesión, la ruta anterior (/dashboard) se sustituye en el historial del navegador. Esto evita que el usuario pueda presionar el botón "Atrás" y ver datos cacheados en pantalla.
+
+2. Mejoras de Seguridad para el Login (Magic Link / OTP)
+Sanitización y Validación de Entrada:
+
+Validar el formato del correo mediante regex antes de enviar cualquier petición a los servidores.
+
+Limpiar espacios en blanco (trim()) en email y nickname para prevenir inyecciones o registros accidentales con espacios.
+
+Protección contra Spam y Rate Limiting (Cooldown UI):
+
+Los enlaces mágicos enviadores por correo son vulnerables a abuso si un usuario (o bot) hace clic repetidamente en el botón de enviar. Implementar un temporizador de enfriamiento (cooldown de 60 segundos) evita el bloqueo de IP por parte del proveedor de correo (resend/sendgrid) y limita el abuso de la API de Supabase.
+
+Redirección Restringida (emailRedirectTo):
+
+Utilizar únicamente window.location.origin o un dominio explícito en la lista blanca de la consola de Supabase para evitar vulnerabilidades de Open Redirect (donde un atacante podría alterar el parámetro de redirección para robar el token de acceso).
+
+Consumo y Purga Inmediata de Tokens (token_hash):
+
+Tan pronto como el enlace mágico llega con el token_hash en la URL y se verifica con verifyOtp, se remueve inmediatamente de la barra de direcciones con replaceState. Esto evita que el hash del token quede en el historial del navegador o se reenvíe en encabezados Referer si el usuario hace clic en enlaces externos.

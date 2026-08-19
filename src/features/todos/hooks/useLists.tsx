@@ -1,45 +1,45 @@
 // features/todos/hooks/useLists.tsx
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyLists, createList } from "../api/listService";
+import { getMyLists, createList, deleteListService } from "../api/listService";
 import { useAuth } from "../../../context/AuthContext";
+import { useState } from "react";
 
 export const useLists = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [deletingListId, setDeletingListId] = useState<string | null>(null);
 
   const { data: lists = [], isLoading } = useQuery({
-    queryKey: ['lists', user?.id],
+    queryKey: ["lists", user?.id],
     queryFn: () => getMyLists(user!.id),
     enabled: !!user,
   });
 
   const createMutation = useMutation({
     mutationFn: (name: string) => createList(name, user!.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['lists', user?.id] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["lists", user?.id] }),
   });
 
-  return { lists, isLoading, createMutation };
+  const deleteList = async (
+    listId: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    setDeletingListId(listId);
+    try {
+      await deleteListService(listId);
+
+      // Invalidamos la caché para que React Query vuelva a sincronizar las listas
+      await queryClient.invalidateQueries({ queryKey: ["lists", user?.id] });
+
+      return { success: true };
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "No se pudo eliminar la lista";
+      return { success: false, error: msg };
+    } finally {
+      setDeletingListId(null);
+    }
+  };
+
+  return { lists, isLoading, createMutation, deleteList, deletingListId };
 };
-
-/* import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createList, getMyLists } from "../api/listService";
-
-export const useLists = () => {
-  const queryClient = useQueryClient();
-
-  // Query: Centraliza el fetching
-  const { data: lists, isLoading } = useQuery({
-    queryKey: ['lists'],
-    queryFn: getMyLists,
-  });
-
-  // Mutation: Centraliza la inserción y la invalidación automática
-  const createListMutation = useMutation({
-    mutationFn: createList, // tu función que inserta en la DB
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lists'] });
-    },
-  });
-
-  return { lists, isLoading, createListMutation };
-}; */

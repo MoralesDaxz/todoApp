@@ -3,10 +3,17 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { useTodos } from "../features/todos/hooks/useTodos";
 import { useLists } from "../features/todos/hooks/useLists";
-import { MdEdit, MdKeyboardArrowLeft } from "react-icons/md";
+import {
+  MdKeyboardArrowLeft,
+  MdOutlineCheckBoxOutlineBlank,
+  MdOutlineLibraryAddCheck,
+} from "react-icons/md";
 import { BsPlusCircleFill } from "react-icons/bs";
 import { FiShare2 } from "react-icons/fi";
-import { FaTrash } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { GrEdit } from "react-icons/gr";
+import { TbSquareCheckFilled, TbUserPause } from "react-icons/tb";
+
 export const ToDo = () => {
   const { listId } = useParams<{ listId: string }>();
   const { user } = useAuth();
@@ -28,7 +35,7 @@ export const ToDo = () => {
   const currentList = lists.find((item) => item.id === listId);
   const listName = currentList?.name?.toUpperCase() || "CARGANDO...";
 
-  // 🎯 Lógica de Roles
+  // Lógica de Roles
   const isOwner = currentList?.owner_id === user?.id;
   const isEditor = isOwner || memberRole === "write";
 
@@ -41,11 +48,15 @@ export const ToDo = () => {
     });
     setNewTaskText("");
   };
-
+  const borderColors = {
+    pending: "border-[#f5f23a9a]",
+    done_by_user: "border-[#ff8903b2]",
+    confirmed: "border-[#53e7188a]",
+  };
   if (isLoading) return <div>Cargando...</div>;
 
   return (
-    <section className="w-full px-6 pt-4 flex flex-col">
+    <section className="px-6 pt-4 flex flex-col">
       <Link
         className="text-xs font-medium absolute top-1 left-2 flex items-center bg-gray-500 p-1 rounded-md hover:opacity-80"
         to={"/dashboard"}
@@ -82,14 +93,14 @@ export const ToDo = () => {
               <>
                 <button
                   type="button"
-                  className="bg-gray-300 flex items-center justify-center px-2 rounded-sm border border-gray-300"
+                  className="bg-gray-300 flex items-center justify-center px-2 rounded-md border border-gray-300"
                   onClick={() => deleteMutation.mutate(todo.id)}
                 >
-                  <FaTrash className="text-gray-800" />
+                  <FaRegTrashAlt className="text-gray-800" />
                 </button>
                 <button
                   type="button"
-                  className="bg-gray-300 flex items-center justify-center px-2 rounded-sm border border-gray-300"
+                  className="bg-gray-300 flex items-center justify-center px-2 rounded-md border border-gray-300"
                   onClick={() => {
                     const newText = prompt("Edita la tarea:", todo.task);
                     if (newText && newText.trim() !== "") {
@@ -97,32 +108,48 @@ export const ToDo = () => {
                     }
                   }}
                 >
-                  <MdEdit className="text-gray-800 h-6 w-5"  />
+                  <GrEdit className="text-gray-800 h-6 w-5" />
                 </button>
               </>
             )}
 
-            <li className="w-full border-2 border-gray-600 backdrop-brightness-80 shadow-2xl rounded-sm flex gap-2 items-center ">
+            <li
+              className={`w-full border-2 backdrop-brightness-80 shadow-2xl rounded-md flex gap-2 items-center h-12 transition-colors ${
+                borderColors[todo.status]
+              }`}
+            >
               <span className="ml-1 flex-1 text-[1.1rem]">{todo.task}</span>
-
-              {/* Botones de cambio de estado según rol */}
-              {todo.status === "pending" && (
-                <button
-                  className="bg-yellow-500 text-white text-sm font-medium p-3 rounded-r-xs"
-                  onClick={() => markAsDoneMutation.mutate(todo.id)}
-                >
-                  Aprobar
-                </button>
+              {/* Owner -> Confirma directamente */}
+              {isOwner && todo.status === "pending" && (
+                <MdOutlineCheckBoxOutlineBlank
+                  className="text-yellow-300 w-6 h-7 mr-1"
+                  onClick={() => confirmMutation.mutate(todo.id)}
+                />
               )}
 
-              {/* Solo el CREADOR puede dar la confirmación final */}
-              {todo.status === "done_by_user" && isOwner && (
-                <button
-                  className="bg-green-500 text-white text-sm font-medium p-3 rounded-r-xs"
+              {/* !Owner pending -> confirmed */}
+              {!isOwner && todo.status === "pending" && (
+                <MdOutlineCheckBoxOutlineBlank
+                  className="text-yellow-300 w-6 h-7 mr-1"
+                  onClick={() => markAsDoneMutation.mutate(todo.id)}
+                />
+              )}
+
+              {/*Solo el CREADOR puede dar la confirmación final */}
+              {isOwner && todo.status === "done_by_user" && (
+                <MdOutlineLibraryAddCheck
+                  className="text-orange-400 w-6 h-7 mr-1"
                   onClick={() => confirmMutation.mutate(todo.id)}
-                >
-                  Confirmar
-                </button>
+                />
+              )}
+
+              {/* Estados */}
+              {todo.status === "done_by_user" && !isOwner && (
+                <TbUserPause className=" text-yellow-500 w-6 h-7 mr-1" />
+              )}
+
+              {todo.status === "confirmed" && (
+                <TbSquareCheckFilled className="text-green-500 w-6 h-7 mr-1" />
               )}
             </li>
           </div>

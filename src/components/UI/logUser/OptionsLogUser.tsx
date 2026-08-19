@@ -1,0 +1,66 @@
+import { useState, type Dispatch, type SetStateAction } from "react";
+
+import { useSupabaseAuth } from "../../../hooks/useSupabaseAuth";
+import { IoClose } from "react-icons/io5";
+import { useNavigate } from "react-router";
+
+interface Props {
+  setIsActiveModalOptions: Dispatch<SetStateAction<boolean>>;
+  email?: string;
+}
+
+export const OptionsLogUser = ({ setIsActiveModalOptions, email }: Props) => {
+  const navigate = useNavigate();
+  const { handleLogout } = useSupabaseAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+
+  const onLogoutClick = async () => {
+    setIsLoggingOut(true);
+    setLogoutError(null);
+
+    const result = await handleLogout();
+
+    if (!result.success) {
+      setIsLoggingOut(false);
+      setLogoutError(result.error || "No se pudo cerrar la sesión.");
+    } else {
+      setIsActiveModalOptions(false);
+      navigate("/login", { replace: true }); // reemplazamos la entrada en el historial del navegador
+    }
+  };
+
+  return (
+    <div className="relative w-72 h-auto border border-gray-300 rounded-sm pt-10 px-2 backdrop-blur-sm transition-all duration-300 bg-gray-800 text-white">
+      <IoClose
+        onClick={() => setIsActiveModalOptions(false)}
+        className="absolute top-1 right-1 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
+      />
+
+      <div className=" text-[1rem]  mt-4 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">
+        {email && (
+          <p
+            className="py-3 px-2 w-full rounded-md bg-gray-900 text-center"
+            title={email}
+          >
+            {email}
+          </p>
+        )}
+
+        <button
+          onClick={onLogoutClick}
+          disabled={isLoggingOut}
+          className="py-2 px-3 w-full rounded-md bg-gray-400 hover:bg-gray-400  text-center transition-colors disabled:opacity-50  cursor-pointer "
+        >
+          {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+        </button>
+        {/* Mensaje de error controlado en la UI */}
+        {logoutError && (
+          <p className="text-xs text-red-400 bg-red-950/60 border border-red-800 px-2 py-1 rounded w-full text-right">
+            {logoutError}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};

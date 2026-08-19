@@ -1,6 +1,7 @@
 ```
-└── 📁todoapp
+└── 📁todoApp
     └── 📁public
+        ├── _redirects
         ├── favicon.svg
         ├── icons.svg
     └── 📁src
@@ -11,9 +12,16 @@
         └── 📁components
             └── 📁routes
                 ├── ProtectedRoute.tsx
+            └── 📁UI
+                └── 📁logUser
+                    ├── LogUser.tsx
+                    ├── menu.css
+                    ├── Menu.tsx
+                    ├── OptionsLogUser.tsx
+                ├── Navbar.tsx
         └── 📁config
             └── 📁supabase
-                ├── supabaseClient.tsx
+                ├── supabaseClient.ts
         └── 📁context
             ├── AuthContext.tsx
         └── 📁features
@@ -23,9 +31,12 @@
                 ├── LoginForm.tsx
                 ├── VerifyingAuth.tsx
                 ├── Welcome.tsx
-            └── 📁shared
             └── 📁todos
+                └── 📁api
+                    ├── listService.ts
+                    ├── todoService.ts
                 └── 📁hooks
+                    ├── useLists.tsx
                     ├── useTodos.tsx
         └── 📁hooks
             ├── useSupabaseAuth.ts
@@ -35,6 +46,9 @@
             ├── ToDo.page.tsx
         └── 📁types
             ├── todo.ts
+        └── 📁utils
+            ├── date.ts
+        ├── App.router.tsx
         ├── App.tsx
         ├── index.css
         ├── main.tsx
