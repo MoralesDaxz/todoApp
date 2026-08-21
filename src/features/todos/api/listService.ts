@@ -27,6 +27,17 @@ export const createList = async (name: string, owner_id: string) => {
   if (error) throw error;
   return data;
 };
+
+export const deleteListService = async (listId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("lists")
+    .delete()
+    .eq("id", listId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
 /* import { supabase } from "../../../config/supabase/supabaseClient";
 
 export const getMyLists = async () => {

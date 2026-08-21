@@ -1,0 +1,39 @@
+/* Links dropDown */
+.openMenu {
+  width: auto;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+/* menu X NavBar*/
+.menuBar1,
+.menuBar2,
+.menuBar3 {
+  width: 25px;
+  height: 3px;
+  background-color: #dfe3e6ce;
+  margin: 6px 0;
+  transition: 0.4s;
+}
+
+.closeMenu .menuBar1 {
+  transform: translate(0, 11px) rotate(-45deg);
+  opacity: 0.8;
+  background-color: #dfe3e6ce;
+}
+
+.closeMenu .menuBar2 {
+  opacity: 0;
+  background-color: #dfe3e6ce;
+}
+
+.closeMenu .menuBar3 {
+  transform: translate(0, -11px) rotate(45deg);
+  opacity: 0.8;
+  background-color: #dfe3e6ce;
+
+
+}
+
+
+

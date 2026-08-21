@@ -3,18 +3,42 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { useTodos } from "../features/todos/hooks/useTodos";
 import { useLists } from "../features/todos/hooks/useLists";
-import { MdKeyboardArrowLeft } from "react-icons/md";
+import {
+  MdKeyboardArrowLeft,
+  MdOutlineCheckBoxOutlineBlank,
+  MdOutlineLibraryAddCheck,
+} from "react-icons/md";
 import { BsPlusCircleFill } from "react-icons/bs";
+import { FiShare2 } from "react-icons/fi";
+import { FaRegTrashAlt } from "react-icons/fa";
+
+import { TbSquareCheckFilled, TbUserPause } from "react-icons/tb";
+import { ShareListModal } from "../features/todos/components/ShareListModal";
+import LogUser from "../components/UI/logUser/LogUser";
+
 export const ToDo = () => {
   const { listId } = useParams<{ listId: string }>();
   const { user } = useAuth();
-  const { todos, isLoading, addMutation, markAsDoneMutation, confirmMutation } =
-    useTodos(listId || null);
   const { lists } = useLists();
+  const {
+    todos,
+    isLoading,
+    memberRole,
+    addMutation,
+    markAsDoneMutation,
+    confirmMutation,
+    deleteMutation,
+  } = useTodos(listId || null);
+
   const [newTaskText, setNewTaskText] = useState("");
-console.log("Listas",lists);
-console.log("listId",listId);
-console.log("todos",todos);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  // Obtener la lista actual para verificar el creador
+  const currentList = lists.find((item) => item.id === listId);
+  const listName = currentList?.name?.toUpperCase() || "CARGANDO...";
+
+  // Lógica de Roles
+  const isOwner = currentList?.owner_id === user?.id;
+  const isEditor = isOwner || memberRole === "write";
 
   const handleAddTask = () => {
     if (!newTaskText.trim() || !listId || !user) return;
@@ -25,25 +49,33 @@ console.log("todos",todos);
     });
     setNewTaskText("");
   };
-
-  // Corrección vital: usar ?. para evitar que la app se rompa si lists aún no tiene datos
-  const listName =
-    lists.find((item) => item.id === listId)?.name?.toUpperCase() ||
-    "CARGANDO...";
-
+  const borderColors = {
+    pending: "border-[#f5f23a9a]",
+    done_by_user: "border-[#ff8903b2]",
+    confirmed: "border-[#53e7188a]",
+  };
   if (isLoading) return <div>Cargando...</div>;
 
   return (
-    <section className="w-full px-6 pt-4 flex flex-col">
+    <section className="max-w-4xl mx-auto px-6 pt-4 flex flex-col">
       <Link
-        className="text-xs font-medium absolute top-1 left-2 flex items-center bg-gray-500 p-1 rounded-md hover:opacity-80"
+        className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80"
         to={"/dashboard"}
       >
-        <MdKeyboardArrowLeft className="w-4 h-4" />
+        <MdKeyboardArrowLeft className="w-4 h-4 text-gray-300" />
         <span>Volver</span>
       </Link>
+      <LogUser />
+      {isOwner && (
+        <div className="absolute top-1 right-12 bg-gray-900 rounded-[50%] cursor-pointer p-2">
+          <FiShare2
+            className="h-5 w-5 text-gray-300 hover:text-white "
+            onClick={() => setIsShareModalOpen(true)}
+          />
+        </div>
+      )}
       <h1 className="text-center text-4xl my-8 font-medium">{listName}</h1>
-      <article className="self-center items-center flex gap-1 border-2 border-gray-400  rounded-md bg-gray-700 p-1">
+      <article className="self-center items-center flex gap-1  bg-gray-900 border border-gray-500 rounded-md p-2">
         <input
           className="outline-none text-xl p-2"
           value={newTaskText}
@@ -59,45 +91,75 @@ console.log("todos",todos);
         />
       </article>
 
-      <ul className="mt-10">
-        {todos.map((todo) => {
-          // Evaluamos el estado AQUÍ, para cada "todo" individual
+      {/* Solo el dueño puede generar códigos */}
 
-          return (
-            <li
-              className="my-2 border-2 border-gray-600 rounded-sm flex gap-2 items-center backdrop-brightness-80 shadow-2xl"
-              key={todo.id}
-            >
-              {/* <span className="text-sm text-gray-400">{statusMsg}</span> */}
+      <ul className="mt-10">
+        {todos.map((todo) => (
+          <div
+            key={todo.id}
+            className={`my-2 flex justify-between items-stretch gap-2 bg-gray-950 rounded-md border ${
+              borderColors[todo.status]
+            }`}
+          >
+            {/* Solo Creador o Editor pueden ELIMINAR y RENOMBRAR */}
+            {isEditor && (
+              <>
+                <button
+                  type="button"
+                  className="border-r border-r-gray-700 flex items-center justify-center px-2"
+                  onClick={() => deleteMutation.mutate(todo.id)}
+                >
+                  <FaRegTrashAlt className="text-gray-500" />
+                </button>
+              </>
+            )}
+
+            <li className={`w-full flex gap-2 items-center p-3 `}>
               <span className="ml-1 flex-1 text-[1.1rem]">{todo.task}</span>
-              {todo.status === "confirmed" && (
-                <button
-                  className="bg-gray-500 text-white opacity-90 text-sm font-medium p-3 rounded-r-xs"
-                  onClick={() => markAsDoneMutation.mutate(todo.id)}
-                >
-                  Hecho
-                </button>
-              )}
-              {todo.status === "pending" && (
-                <button
-                  className="bg-yellow-500 text-white text-sm font-medium p-3 rounded-r-xs"
-                  onClick={() => markAsDoneMutation.mutate(todo.id)}
-                >
-                  Aprobar
-                </button>
-              )}
-              {todo.status === "done_by_user" && (
-                <button
-                  className="bg-green-500 text-white text-sm font-medium p-3 rounded-r-xs"
+              {/* Owner -> Confirma directamente */}
+              {isOwner && todo.status === "pending" && (
+                <MdOutlineCheckBoxOutlineBlank
+                  className="text-yellow-300 w-6 h-7 mr-1"
                   onClick={() => confirmMutation.mutate(todo.id)}
-                >
-                  Confirmar
-                </button>
+                />
+              )}
+
+              {/* !Owner pending -> confirmed */}
+              {!isOwner && todo.status === "pending" && (
+                <MdOutlineCheckBoxOutlineBlank
+                  className="text-yellow-300 w-6 h-7 mr-1"
+                  onClick={() => markAsDoneMutation.mutate(todo.id)}
+                />
+              )}
+
+              {/*Solo el CREADOR puede dar la confirmación final */}
+              {isOwner && todo.status === "done_by_user" && (
+                <MdOutlineLibraryAddCheck
+                  className="text-orange-400 w-6 h-7 mr-1"
+                  onClick={() => confirmMutation.mutate(todo.id)}
+                />
+              )}
+
+              {/* Estados */}
+              {todo.status === "done_by_user" && !isOwner && (
+                <TbUserPause className=" text-yellow-500 w-6 h-7 mr-1" />
+              )}
+
+              {todo.status === "confirmed" && (
+                <TbSquareCheckFilled className="text-green-500 w-6 h-7 mr-1" />
               )}
             </li>
-          );
-        })}
+          </div>
+        ))}
       </ul>
+      {listId && (
+        <ShareListModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          listId={listId}
+          listName={listName}
+        />
+      )}
     </section>
   );
 };
