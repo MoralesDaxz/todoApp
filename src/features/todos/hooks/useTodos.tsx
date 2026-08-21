@@ -93,7 +93,7 @@ export const useTodos = (listId: string | null) => {
       queryClient.invalidateQueries({ queryKey: ["todos", listId] });
     },
   });
-
+//Editar nombre en tareas, no implementaremos, dejaremos solo eliminar
   const renameMutation = useMutation({
     // Recibe un objeto con el ID de la tarea y el nuevo texto
     mutationFn: async ({ id, newTask }: { id: string; newTask: string }) => {

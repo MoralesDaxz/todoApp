@@ -29,3 +29,14 @@ Utilizar únicamente window.location.origin o un dominio explícito en la lista 
 Consumo y Purga Inmediata de Tokens (token_hash):
 
 Tan pronto como el enlace mágico llega con el token_hash en la URL y se verifica con verifyOtp, se remueve inmediatamente de la barra de direcciones con replaceState. Esto evita que el hash del token quede en el historial del navegador o se reenvíe en encabezados Referer si el usuario hace clic en enlaces externos.
+
+Arquitectura de funcionalidad
+src/
+└── features/
+    └── todos/
+        ├── api/
+        │   └── shareService.ts       # Consultas SQL/Supabase para invitaciones
+        ├── hooks/
+        │   └── useShareList.ts       # Estado y mutaciones para generar/copiar código
+        └── components/
+            └── ShareListModal.tsx    # Modal UI con opción de lectura/escritura y copiar

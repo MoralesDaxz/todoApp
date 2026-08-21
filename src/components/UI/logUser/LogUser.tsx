@@ -19,7 +19,7 @@ const LogUser = () => {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.2 }}
               onClick={() => setIsActiveModalOptions(true)}
-              className="w-9 h-9 rounded-full bg-gray-500 text-sm font-semibold text-white flex items-center justify-center cursor-pointer"
+              className="w-9 h-9 rounded-full bg-gray-900 text-md font-semibold text-gray-300 flex items-center justify-center cursor-pointer"
             >
               {user?.email?.substring(0, 1).toUpperCase()}
             </motion.p>

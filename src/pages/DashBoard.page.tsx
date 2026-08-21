@@ -5,14 +5,29 @@ import { useLists } from "../features/todos/hooks/useLists";
 import { useAuth } from "../context/AuthContext";
 import { HiTrash, HiExclamationTriangle } from "react-icons/hi2";
 import { Link } from "react-router";
+import LogUser from "../components/UI/logUser/LogUser";
+import { formatRelativeTime } from "../utils/date";
 
 export const DashBoard = () => {
   const { user } = useAuth();
-  const { lists, isLoading, deleteList, deletingListId } = useLists();
+  const { lists, isLoading, createMutation, deleteList, deletingListId } =
+    useLists();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const [newListName, setNewListName] = useState("");
+  // 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
+  const sortedLists = [...lists].sort((a, b) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+  const handleCreateList = () => {
+    if (!newListName.trim()) return;
+    createMutation.mutate(newListName);
+    setNewListName("");
+  };
   // Estado para controlar la lista seleccionada a eliminar (si es null, el modal está cerrado)
-  const [listToDelete, setListToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [listToDelete, setListToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   // Confirmar eliminación desde el modal
   const confirmDelete = async () => {
@@ -30,12 +45,31 @@ export const DashBoard = () => {
   };
 
   if (isLoading) {
-    return <p className="text-center mt-10 text-gray-400">Cargando listas...</p>;
+    return (
+      <p className="text-center mt-10 text-gray-400">Cargando listas...</p>
+    );
   }
 
   return (
-    <section className="p-6 max-w-4xl mx-auto relative">
-      <h1 className="text-3xl font-bold mb-6 text-white">Mis Listas</h1>
+    <section className="max-w-4xl mx-auto px-6 pt-4 flex flex-col">
+      <h1 className="text-center text-4xl my-8 font-medium">Gestiones</h1>
+      <LogUser />
+      <div className="w-fit mb-10 p-3 rounded-lg self-center flex items-center bg-gray-900 border border-gray-500 ">
+        <input
+          className="outline-none text-xl"
+          value={newListName}
+          onChange={(e) => setNewListName(e.target.value)}
+          placeholder="Dame un título."
+        />
+
+        <button
+          className="bg-blue-400 p-3 rounded-sm text-[1rem] font-medium"
+          disabled={createMutation.isPending}
+          onClick={handleCreateList}
+        >
+          {createMutation.isPending ? "Creando..." : "Crear"}
+        </button>
+      </div>
 
       {/* Banner de error si falla la eliminación */}
       {errorMessage && (
@@ -45,37 +79,51 @@ export const DashBoard = () => {
       )}
 
       {/* Grid de listas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {lists.map((list: { id: string; name: string; owner_id: string }) => {
-          const isOwner = list.owner_id === user?.id;
-          const isDeleting = deletingListId === list.id;
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {sortedLists.map(
+          (list: {
+            id: string;
+            name: string;
+            owner_id: string;
+            created_at: string;
+          }) => {
+            const isOwner = list.owner_id === user?.id;
+            const isDeleting = deletingListId === list.id;
 
-          return (
-            <article
-              key={list.id}
-              className="p-4 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-between shadow-md hover:border-gray-600 transition-all"
-            >
-              <Link to={`/todo/${list.id}`} className="flex-1">
-                <h2 className="text-lg font-semibold text-white">{list.name}</h2>
-                <span className="text-xs text-gray-400">
-                  {isOwner ? "Propietario" : "Compartida contigo"}
-                </span>
-              </Link>
+            return (
+              <article
+                key={list.id}
+                className="p-4 bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md  transition-all"
+              >
+                <Link to={`/todo/${list.id}`} className="flex-1">
+                  <h2 className="text-lg font-semibold text-white">
+                    {list.name}
+                  </h2>
+                  <div className="text-xs text-gray-400 flex gap-2">
+                    <span>{formatRelativeTime(list.created_at)}</span>
+                    <span>
+                      {isOwner ? "Propietario" : "Compartida contigo"}
+                    </span>
+                  </div>
+                </Link>
 
-              {/* Botón que abre el modal de confirmación */}
-              {isOwner && (
-                <button
-                  onClick={() => setListToDelete({ id: list.id, name: list.name })}
-                  disabled={isDeleting}
-                  title="Eliminar lista"
-                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer ml-4"
-                >
-                  <HiTrash className="text-xl" />
-                </button>
-              )}
-            </article>
-          );
-        })}
+                {/* Botón que abre el modal de confirmación */}
+                {isOwner && (
+                  <button
+                    onClick={() =>
+                      setListToDelete({ id: list.id, name: list.name })
+                    }
+                    disabled={isDeleting}
+                    title="Eliminar lista"
+                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer ml-4"
+                  >
+                    <HiTrash className="text-xl" />
+                  </button>
+                )}
+              </article>
+            );
+          },
+        )}
       </div>
 
       {/* MODAL DE CONFIRMACIÓN CON ANIMACIÓN ZOOM */}

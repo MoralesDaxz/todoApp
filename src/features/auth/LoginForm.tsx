@@ -39,7 +39,7 @@ export const LoginForm = ({
   };
 
   return (
-    <section className="px-6 pt-4 flex flex-col items-center">
+    <section className="max-w-4xl mx-auto px-6 pt-4 flex flex-col items-center">
       <h1 className="font-bold text-4xl">Regístrate</h1>
 
       <form
