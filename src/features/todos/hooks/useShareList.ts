@@ -26,11 +26,13 @@ export const useShareList = (listId: string | null) => {
   const resetShareState = () => {
     setGeneratedCode(null);
     setCopied(false);
+    shareMutation.reset();
   };
 
-  return {
+ return {
     generateCode: shareMutation.mutate,
     isGenerating: shareMutation.isPending,
+    errorMessage: shareMutation.error?.message || null,
     generatedCode,
     copied,
     copyToClipboard,

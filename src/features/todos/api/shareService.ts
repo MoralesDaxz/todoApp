@@ -17,7 +17,7 @@ export const createInviteCode = async (
   const code = generateRandomCode();
 
   const { data, error } = await supabase
-    .from("list_invites")
+    .from("list_invitations")
     .insert([{ list_id: listId, code, role }])
     .select("code, role")
     .single();
