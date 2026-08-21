@@ -5,7 +5,7 @@ type Props = {
   setClassMenu: (value: string) => void;
 };
 export const Menu = ({ classMenu, setClassMenu }: Props) => {
-  console.log("Renderizado de Menu");
+
   
   return (
     <div className="absolute left-2 top-3 z-50">

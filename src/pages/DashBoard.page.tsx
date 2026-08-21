@@ -1,12 +1,13 @@
 // src/pages/DashBoard.page.tsx
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useLists } from "../features/todos/hooks/useLists";
 import { useAuth } from "../context/AuthContext";
 import { HiTrash, HiExclamationTriangle } from "react-icons/hi2";
 import { Link } from "react-router";
 import LogUser from "../components/UI/logUser/LogUser";
 import { formatRelativeTime } from "../utils/date";
+import { FaAngleRight, FaUsers } from "react-icons/fa";
 
 export const DashBoard = () => {
   const { user } = useAuth();
@@ -14,10 +15,18 @@ export const DashBoard = () => {
     useLists();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [newListName, setNewListName] = useState("");
+  const [pickList, setPickList] = useState<boolean>(true);
+  const stylePickList = "bg-[#0d488b] border border-gray-300 font-medium";
   // 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
+  // 1. Listas donde eres el creador
+  const myLists = sortedLists.filter((list) => list.owner_id === user?.id);
+
+  // 2. Listas donde NO eres el creador (eres invitado)
+  const sharedLists = sortedLists.filter((list) => list.owner_id !== user?.id);
+
   const handleCreateList = () => {
     if (!newListName.trim()) return;
     createMutation.mutate(newListName);
@@ -43,7 +52,26 @@ export const DashBoard = () => {
     // Cerramos el modal tras la acción
     setListToDelete(null);
   };
+  // 1. Variante para el grid (Padre)
+  const containerVariants:Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1, // Tiempo en segundos entre cada tarjeta
+      },
+    },
+  };
 
+  // 2. Variante para cada tarjeta (Hijo)
+  const itemVariants:Variants = {
+    hidden: { opacity: 0, x: -50 }, // Entra desde -50px a la izquierda
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { type: "spring", stiffness: 300, damping: 24 }, // Animación fluida
+    },
+  };
   if (isLoading) {
     return (
       <p className="text-center mt-10 text-gray-400">Cargando listas...</p>
@@ -61,7 +89,6 @@ export const DashBoard = () => {
           onChange={(e) => setNewListName(e.target.value)}
           placeholder="Dame un título."
         />
-
         <button
           className="bg-blue-400 p-3 rounded-sm text-[1rem] font-medium"
           disabled={createMutation.isPending}
@@ -78,59 +105,131 @@ export const DashBoard = () => {
         </div>
       )}
 
-      {/* Grid de listas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {sortedLists.map(
-          (list: {
-            id: string;
-            name: string;
-            owner_id: string;
-            created_at: string;
-          }) => {
-            const isOwner = list.owner_id === user?.id;
-            const isDeleting = deletingListId === list.id;
-
-            return (
-              <article
-                key={list.id}
-                className="p-4 bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md  transition-all"
-              >
-                <Link to={`/todo/${list.id}`} className="flex-1">
-                  <h2 className="text-lg font-semibold text-white">
-                    {list.name}
-                  </h2>
-                  <div className="text-xs text-gray-400 flex gap-2">
-                    <span>{formatRelativeTime(list.created_at)}</span>
-                    <span>
-                      {isOwner ? "Propietario" : "Compartida contigo"}
-                    </span>
-                  </div>
-                </Link>
-
-                {/* Botón que abre el modal de confirmación */}
-                {isOwner && (
-                  <button
-                    onClick={() =>
-                      setListToDelete({ id: list.id, name: list.name })
-                    }
-                    disabled={isDeleting}
-                    title="Eliminar lista"
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer ml-4"
-                  >
-                    <HiTrash className="text-xl" />
-                  </button>
-                )}
-              </article>
-            );
-          },
-        )}
+      <div className="bg-gray-950 border border-gray-700 text-gray-300 rounded-md p- my-2 flex text-center">
+        <p
+          onClick={() => setPickList(true)}
+          className={`w-full  rounded-md text-sm p-4 transition-colors duration-300 ease-in ${pickList ? stylePickList : null}`}
+        >
+          Mis listas
+        </p>
+        <p
+          onClick={() => setPickList(false)}
+          className={`w-full  rounded-md text-sm  p-4 transition-colors duration-300 ease-in ${!pickList ? stylePickList : null}`}
+        >
+          Compartidas conmigo
+        </p>
       </div>
 
-      {/* MODAL DE CONFIRMACIÓN CON ANIMACIÓN ZOOM */}
+      {/* Grid de listas */}
+      {/* Grid de listas convertido a motion.div */}
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 gap-3"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        key={pickList ? "my-lists" : "shared-lists"} // Reinicia la animación al cambiar de vista
+      >
+        {pickList &&
+          myLists.map(
+            (list: {
+              id: string;
+              name: string;
+              owner_id: string;
+              created_at: string;
+            }) => {
+              const isOwner = list.owner_id === user?.id;
+              const isDeleting = deletingListId === list.id;
+
+              return (
+                <motion.article
+                  variants={itemVariants} // Se enlaza con el stagger del padre automáticamente
+                  key={list.id}
+                  className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
+                >
+                  {isOwner ? (
+                    <button
+                      onClick={() =>
+                        setListToDelete({ id: list.id, name: list.name })
+                      }
+                      disabled={isDeleting}
+                      title="Eliminar lista"
+                      className="mx-3 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer "
+                    >
+                      <HiTrash className="text-xl" title="Eliminar" />
+                    </button>
+                  ) : (
+                    <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
+                  )}
+                  <Link to={`/todo/${list.id}`} className="flex-1 p-3">
+                    <h2 className="text-lg font-semibold text-white">
+                      {list.name}
+                    </h2>
+                    <div className="text-xs text-gray-400 flex flex-col gap-1 mt-2">
+                      <strong>
+                        {isOwner ? "Propietario" : "Compartida contigo"}
+                      </strong>
+                      <span>{formatRelativeTime(list.created_at)}</span>
+                    </div>
+                  </Link>
+                  <FaAngleRight className=" absolute top-9 right-0  w-5 h-5 text-gray-600" />
+                </motion.article>
+              );
+            },
+          )}
+
+        {!pickList &&
+          sharedLists.map(
+            (list: {
+              id: string;
+              name: string;
+              owner_id: string;
+              created_at: string;
+            }) => {
+              const isOwner = list.owner_id === user?.id;
+              const isDeleting = deletingListId === list.id;
+
+              return (
+                <motion.article
+                  variants={itemVariants} // Se enlaza con el stagger del padre
+                  key={list.id}
+                  className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
+                >
+                  {isOwner ? (
+                    <button
+                      onClick={() =>
+                        setListToDelete({ id: list.id, name: list.name })
+                      }
+                      disabled={isDeleting}
+                      title="Eliminar lista"
+                      className="mx-3 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer "
+                    >
+                      <HiTrash className="text-xl" title="Eliminar" />
+                    </button>
+                  ) : (
+                    <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
+                  )}
+                  <Link to={`/todo/${list.id}`} className="flex-1 p-3">
+                    <h2 className="text-lg font-semibold text-white">
+                      {list.name}
+                    </h2>
+                    <div className="text-xs text-gray-400 flex flex-col gap-1 mt-2">
+                      <strong>
+                        {isOwner ? "Propietario" : "Compartida contigo"}
+                      </strong>
+                      <span>{formatRelativeTime(list.created_at)}</span>
+                    </div>
+                  </Link>
+                  <FaAngleRight className=" absolute top-9 right-0  w-5 h-5 text-gray-600" />
+                </motion.article>
+              );
+            },
+          )}
+      </motion.div>
+
+      {/* Modal*/}
       <AnimatePresence>
         {listToDelete && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            {/* Backdrop click para cerrar */}
             <div
               className="absolute inset-0"
               onClick={() => setListToDelete(null)}
