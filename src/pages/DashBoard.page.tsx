@@ -16,7 +16,7 @@ export const DashBoard = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [newListName, setNewListName] = useState("");
   const [pickList, setPickList] = useState<boolean>(true);
-  const stylePickList = "bg-[#0d488b] border border-gray-300 font-medium";
+  const stylePickList = "bg-[#0d488b] border border-gray-500 font-medium outline-none";
   // 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -53,7 +53,7 @@ export const DashBoard = () => {
     setListToDelete(null);
   };
   // 1. Variante para el grid (Padre)
-  const containerVariants:Variants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -64,7 +64,7 @@ export const DashBoard = () => {
   };
 
   // 2. Variante para cada tarjeta (Hijo)
-  const itemVariants:Variants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, x: -50 }, // Entra desde -50px a la izquierda
     visible: {
       opacity: 1,
@@ -104,24 +104,23 @@ export const DashBoard = () => {
           {errorMessage}
         </div>
       )}
-
-      <div className="bg-gray-950 border border-gray-700 text-gray-300 rounded-md p- my-2 flex text-center">
-        <p
+      {/* Picklist */}
+      <div className="bg-gray-950 border border-gray-700  rounded-md p- my-2 flex text-center">
+        <button
           onClick={() => setPickList(true)}
-          className={`w-full  rounded-md text-sm p-4 transition-colors duration-300 ease-in ${pickList ? stylePickList : null}`}
+          className={`w-full rounded-md text-[1rem] p-4 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium ${pickList ? stylePickList : null}`}
         >
           Mis listas
-        </p>
-        <p
+        </button>
+        <button
           onClick={() => setPickList(false)}
-          className={`w-full  rounded-md text-sm  p-4 transition-colors duration-300 ease-in ${!pickList ? stylePickList : null}`}
+          className={`w-full rounded-md text-[1rem] p-4 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium ${!pickList ? stylePickList : null}`}
         >
           Compartidas conmigo
-        </p>
+        </button>
       </div>
 
-      {/* Grid de listas */}
-      {/* Grid de listas convertido a motion.div */}
+      {/* Listas*/}
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 gap-3"
         variants={containerVariants}
@@ -171,7 +170,7 @@ export const DashBoard = () => {
                       <span>{formatRelativeTime(list.created_at)}</span>
                     </div>
                   </Link>
-                  <FaAngleRight className=" absolute top-9 right-0  w-5 h-5 text-gray-600" />
+                  <FaAngleRight className=" absolute top-9 right-1 w-5 h-5 text-gray-300" />
                 </motion.article>
               );
             },
@@ -219,7 +218,7 @@ export const DashBoard = () => {
                       <span>{formatRelativeTime(list.created_at)}</span>
                     </div>
                   </Link>
-                  <FaAngleRight className=" absolute top-9 right-0  w-5 h-5 text-gray-600" />
+                  <FaAngleRight className=" absolute top-9 right-1  w-5 h-5 text-gray-300" />
                 </motion.article>
               );
             },

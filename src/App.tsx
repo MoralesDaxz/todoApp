@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/routes/ProtectedRoute";
 import { ToDo } from "./pages/ToDo.page";
 import { DashBoard } from "./pages/DashBoard.page";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Register from "./pages/Register.page";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ const App = () => {
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route
               path="/dashboard"
               element={
