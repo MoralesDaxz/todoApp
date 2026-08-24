@@ -1,15 +1,21 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 
-import { useSupabaseAuth } from "../../../hooks/useSupabaseAuth";
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router";
+import { useSupabaseAuth } from "../../../hooks/useSupabaseAuth";
+import { FaUserCircle } from "react-icons/fa";
 
 interface Props {
   setIsActiveModalOptions: Dispatch<SetStateAction<boolean>>;
   email?: string;
+  nickname?: string;
 }
 
-export const OptionsLogUser = ({ setIsActiveModalOptions, email }: Props) => {
+export const OptionsLogUser = ({
+  setIsActiveModalOptions,
+  email,
+  nickname,
+}: Props) => {
   const navigate = useNavigate();
   const { handleLogout } = useSupabaseAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -18,16 +24,9 @@ export const OptionsLogUser = ({ setIsActiveModalOptions, email }: Props) => {
   const onLogoutClick = async () => {
     setIsLoggingOut(true);
     setLogoutError(null);
-
-    const result = await handleLogout();
-
-    if (!result.success) {
-      setIsLoggingOut(false);
-      setLogoutError(result.error || "No se pudo cerrar la sesión.");
-    } else {
-      setIsActiveModalOptions(false);
-      navigate("/login", { replace: true }); // reemplazamos la entrada en el historial del navegador
-    }
+    setIsActiveModalOptions(false);
+    handleLogout();
+    navigate("/login", { replace: true }); // reemplazamos la entrada en el historial del navegador
   };
 
   return (
@@ -37,7 +36,16 @@ export const OptionsLogUser = ({ setIsActiveModalOptions, email }: Props) => {
         className="absolute top-1 right-1 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
       />
 
-      <div className=" text-[1rem]  mt-4 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">
+      <FaUserCircle className="w-8 h-8 text-gray-300" />
+      <div className=" text-[1rem] mt-4 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">
+        {nickname && (
+          <p
+            className="py-3 px-2 w-full rounded-md bg-gray-900 text-center"
+            title={nickname}
+          >
+            {nickname}
+          </p>
+        )}
         {email && (
           <p
             className="py-3 px-2 w-full rounded-md bg-gray-900 text-center"

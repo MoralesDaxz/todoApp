@@ -31,27 +31,7 @@ body {
   box-sizing: border-box;
 }
 
-/* h1 {
-  font-size:xx-large;
-  font-weight: 500;
-}
-h2 {
-  font-size: large;
-  font-weight: 400;
-}
-h3 {
-  font-size: medium;
-  font-weight: 300;
-}
-h4 {
-  font-size: small;
-  font-weight: 300;
-} */
-button {
-  cursor: pointer;
-  transition: all 0.3s;
-}
-button:hover {
-  opacity: 85%;
+input{
+  outline: none;
 }
 

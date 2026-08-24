@@ -33,6 +33,7 @@ const LogUser = () => {
             >
               <OptionsLogUser
                 email={user?.email}
+                nickname={user?.user_metadata?.nickname}
                 setIsActiveModalOptions={setIsActiveModalOptions}
               />
             </motion.div>

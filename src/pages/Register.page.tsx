@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { LoginForm } from "../features/auth/LoginForm";
+import { RegisterForm } from "../features/auth/RegisterForm";
 import { useSupabaseAuth } from "../hooks/useSupabaseAuth";
 import { useNavigate } from "react-router";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
   const {
     loading,
@@ -12,9 +12,9 @@ const Login = () => {
     setEmail,
     password,
     setPassword,
-    handleMagicLinkLogin,
-    handlePasswordLogin,
-    cooldown,
+    nickname,
+    setNickname,
+    handleRegister,
   } = useSupabaseAuth();
   
   const { user } = useAuth();
@@ -26,17 +26,17 @@ const Login = () => {
   }, [user, navigate]);
 
   return (
-    <LoginForm
+    <RegisterForm
       email={email}
       setEmail={setEmail}
       password={password}
       setPassword={setPassword}
+      nickname={nickname}
+      setNickname={setNickname}
       loading={loading}
-      cooldown={cooldown}
-      handleMagicLinkLogin={handleMagicLinkLogin}
-      handlePasswordLogin={handlePasswordLogin}
+      handleRegister={handleRegister}
     />
   );
 };
 
-export default Login;
+export default Register;
