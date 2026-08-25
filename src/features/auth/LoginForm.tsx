@@ -27,7 +27,7 @@ export const LoginForm = ({
   handleMagicLinkLogin,
   handlePasswordLogin,
 }: LoginFormProps) => {
-  const [loginMethod, setLoginMethod] = useState<"magic" | "password">("magic");
+  const [loginMethod, setLoginMethod] = useState<"magic" | "password">("password");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [typePass, setTypePass] = useState("password");
@@ -60,21 +60,6 @@ export const LoginForm = ({
         <button
           type="button"
           onClick={() => {
-            setLoginMethod("magic");
-            setErrorMessage(null);
-            setSuccessMessage(null);
-          }}
-          className={`py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer  ${
-            loginMethod === "magic"
-              ? "bg-blue-400 hover:bg-blue-500 text-white"
-              : "text-gray-400 hover:text-white"
-          }`}
-        >
-          Enlace Mágico
-        </button>
-        <button
-          type="button"
-          onClick={() => {
             setLoginMethod("password");
             setErrorMessage(null);
             setSuccessMessage(null);
@@ -85,7 +70,22 @@ export const LoginForm = ({
               : "text-gray-400 hover:text-white"
           }`}
         >
-          Contraseña
+          Login
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setLoginMethod("magic");
+            setErrorMessage(null);
+            setSuccessMessage(null);
+          }}
+          className={`py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer  ${
+            loginMethod === "magic"
+              ? "bg-blue-400 hover:bg-blue-500 text-white"
+              : "text-gray-400 hover:text-white"
+          }`}
+        >
+          Enlace al correo
         </button>
       </div>
 

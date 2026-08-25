@@ -1,20 +1,22 @@
-// features/todos/api/listService.ts
+// src/features/todos/api/listService.ts
 import { supabase } from "../../../config/supabase/supabaseClient";
 
-export const getMyLists = async (userId: string) => {
-  const [ownedRes, memberRes] = await Promise.all([
-    supabase.from("lists").select("*").eq("owner_id", userId),
-    supabase
-      .from("lists")
-      .select("*, list_members!inner(user_id)")
-      .eq("list_members.user_id", userId)
-      .order('created_at', { ascending: false }),
-  ]);
+export interface ListItem {
+  id: string;
+  name: string;
+  owner_id: string;
+  created_at: string;
+  owner_nickname: string;
+  members: Array<{ nickname: string; role: "read" | "write" }>;
+}
 
-  if (ownedRes.error) throw ownedRes.error;
-  if (memberRes.error) throw memberRes.error;
+export const getLists = async (): Promise<ListItem[]> => {
+  const { data, error } = await supabase
+    .from("v_user_lists")
+    .select("*");
 
-  return [...(ownedRes.data || []), ...(memberRes.data || [])];
+  if (error) throw new Error(error.message);
+  return data || [];
 };
 
 export const createList = async (name: string, owner_id: string) => {
@@ -38,21 +40,4 @@ export const deleteListService = async (listId: string): Promise<void> => {
     throw new Error(error.message);
   }
 };
-/* import { supabase } from "../../../config/supabase/supabaseClient";
 
-export const getMyLists = async () => {
-  const { data, error } = await supabase.from('lists').select('*').order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
-};
-
-export const createList = async (listData: { name: string; owner_id: string }) => {
-  const { data, error } = await supabase
-    .from('lists')
-    .insert([listData])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}; */

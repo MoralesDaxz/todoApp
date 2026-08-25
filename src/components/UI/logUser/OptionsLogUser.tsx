@@ -36,8 +36,8 @@ export const OptionsLogUser = ({
         className="absolute top-1 right-1 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
       />
 
-      <FaUserCircle className="w-8 h-8 text-gray-300" />
-      <div className=" text-[1rem] mt-4 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">
+      <div className=" text-[1rem] mt-2 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">
+      <FaUserCircle className="w-10 h-10 self-center text-gray-300" />
         {nickname && (
           <p
             className="py-3 px-2 w-full rounded-md bg-gray-900 text-center"

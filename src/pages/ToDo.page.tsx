@@ -30,6 +30,8 @@ export const ToDo = () => {
     confirmMutation,
     deleteMutation,
   } = useTodos(listId || null);
+  console.log(todos);
+  
 
   const [newTaskText, setNewTaskText] = useState("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);

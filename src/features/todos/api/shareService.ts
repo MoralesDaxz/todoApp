@@ -1,3 +1,4 @@
+
 import { supabase } from "../../../config/supabase/supabaseClient";
 
 export interface InviteCode {
@@ -24,4 +25,13 @@ export const createInviteCode = async (
 
   if (error) throw new Error(error.message);
   return data;
+};
+
+export const joinListByCode = async (code: string): Promise<string> => {
+  const { data, error } = await supabase.rpc("join_list_by_code", {
+    p_code: code.trim(),
+  });
+
+  if (error) throw new Error(error.message);
+  return data as string; // Retorna el list_id de la lista unida
 };

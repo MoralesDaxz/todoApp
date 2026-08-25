@@ -1,22 +1,25 @@
 // src/pages/DashBoard.page.tsx
-import { useState } from "react";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useLists } from "../features/todos/hooks/useLists";
 import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { HiTrash, HiExclamationTriangle } from "react-icons/hi2";
 import { Link } from "react-router";
 import LogUser from "../components/UI/logUser/LogUser";
 import { formatRelativeTime } from "../utils/date";
 import { FaAngleRight, FaUsers } from "react-icons/fa";
+import type { ListItem } from "../types/dashboard";
+import { useJoinList } from "../features/todos/hooks/useJoinList";
 
 export const DashBoard = () => {
   const { user } = useAuth();
   const { lists, isLoading, createMutation, deleteList, deletingListId } =
     useLists();
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [newListName, setNewListName] = useState("");
   const [pickList, setPickList] = useState<boolean>(true);
-  const stylePickList = "bg-[#0d488b] border border-gray-500 font-medium outline-none";
+  const stylePickList = "bg-[#0d488b] font-medium outline-none";
   // 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -37,7 +40,25 @@ export const DashBoard = () => {
     id: string;
     name: string;
   } | null>(null);
+  const joinMutation = useJoinList();
+  const [joinCode, setJoinCode] = useState("");
+  const [actionType, setActionType] = useState<"create" | "join">("create");
+  const [joinError, setJoinError] = useState<string | null>(null);
 
+  const handleJoinList = () => {
+    if (!joinCode.trim()) return;
+    setJoinError(null);
+
+    joinMutation.mutate(joinCode, {
+      onSuccess: () => {
+        setJoinCode("");
+        setPickList(false); // Cambia automáticamente a la pestaña "Compartidas conmigo"
+      },
+      onError: (err: Error) => {
+        setJoinError(err.message || "No se pudo unirse a la lista.");
+      },
+    });
+  };
   // Confirmar eliminación desde el modal
   const confirmDelete = async () => {
     if (!listToDelete) return;
@@ -82,20 +103,80 @@ export const DashBoard = () => {
     <section className="max-w-4xl mx-auto px-6 pt-4 flex flex-col">
       <h1 className="text-center text-4xl my-8 font-medium">Gestiones</h1>
       <LogUser />
-      <div className="w-fit mb-10 p-3 rounded-lg self-center flex items-center bg-gray-900 border border-gray-500 ">
-        <input
-          className="outline-none text-xl"
-          value={newListName}
-          onChange={(e) => setNewListName(e.target.value)}
-          placeholder="Dame un título."
-        />
-        <button
-          className="bg-blue-400 p-3 rounded-sm text-[1rem] font-medium"
-          disabled={createMutation.isPending}
-          onClick={handleCreateList}
-        >
-          {createMutation.isPending ? "Creando..." : "Crear"}
-        </button>
+      <div className="flex flex-col items-center mb-8">
+        {/* Selector Crear / Unirse */}
+        <div className="flex gap-2 mb-2 bg-gray-950 p-1 rounded-lg border border-gray-800 text-sm">
+          <button
+            onClick={() => {
+              setActionType("create");
+              setJoinError(null);
+            }}
+            className={`px-4 py-1.5 rounded-md transition-colors ${
+              actionType === "create"
+                ? "bg-gray-800 text-white font-medium"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Crear Lista
+          </button>
+          <button
+            onClick={() => {
+              setActionType("join");
+              setJoinError(null);
+            }}
+            className={`px-4 py-1.5 rounded-md transition-colors ${
+              actionType === "join"
+                ? "bg-gray-800 text-white font-medium"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Unirse con Código
+          </button>
+        </div>
+
+        {/* Formulario Dinámico */}
+        <div className="w-fit p-3 rounded-lg flex items-center bg-gray-900 border border-gray-500 gap-2">
+          {actionType === "create" ? (
+            <>
+              <input
+                className="outline-none text-lg px-2 bg-transparent text-white"
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                placeholder="Nombre de la lista"
+              />
+              <button
+                className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-md font-medium text-sm text-white transition-colors disabled:opacity-50"
+                disabled={createMutation.isPending}
+                onClick={handleCreateList}
+              >
+                {createMutation.isPending ? "Creando..." : "Crear"}
+              </button>
+            </>
+          ) : (
+            <>
+              <input
+                className="outline-none text-lg px-2 bg-transparent text-white font-mono uppercase tracking-wider placeholder:normal-case placeholder:font-sans"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value)}
+                placeholder="Introduce el código"
+              />
+              <button
+                className="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-md font-medium text-sm text-white transition-colors disabled:opacity-50"
+                disabled={joinMutation.isPending}
+                onClick={handleJoinList}
+              >
+                {joinMutation.isPending ? "Uniéndose..." : "Unirme"}
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Mensaje de error al unirse */}
+        {joinError && (
+          <p className="text-xs text-red-400 mt-2 bg-red-950/60 border border-red-800 px-3 py-1.5 rounded-md">
+            {joinError}
+          </p>
+        )}
       </div>
 
       {/* Banner de error si falla la eliminación */}
@@ -105,18 +186,18 @@ export const DashBoard = () => {
         </div>
       )}
       {/* Picklist */}
-      <div className="bg-gray-950 border border-gray-700  rounded-md p- my-2 flex text-center">
+      <div className="bg-gray-950 border border-gray-700  rounded-md  my-2 flex text-center p-1">
         <button
           onClick={() => setPickList(true)}
-          className={`w-full rounded-md text-[1rem] p-4 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium ${pickList ? stylePickList : null}`}
+          className={`w-full rounded-md text-[1rem] p-3 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium ${pickList ? stylePickList : null}`}
         >
           Mis listas
         </button>
         <button
           onClick={() => setPickList(false)}
-          className={`w-full rounded-md text-[1rem] p-4 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium ${!pickList ? stylePickList : null}`}
+          className={`w-full rounded-md text-[1rem] p-3 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium ${!pickList ? stylePickList : null}`}
         >
-          Compartidas conmigo
+          Compartidas
         </button>
       </div>
 
@@ -129,100 +210,149 @@ export const DashBoard = () => {
         key={pickList ? "my-lists" : "shared-lists"} // Reinicia la animación al cambiar de vista
       >
         {pickList &&
-          myLists.map(
-            (list: {
-              id: string;
-              name: string;
-              owner_id: string;
-              created_at: string;
-            }) => {
-              const isOwner = list.owner_id === user?.id;
-              const isDeleting = deletingListId === list.id;
+          myLists.map((list: ListItem) => {
+            const isOwner = list.owner_id === user?.id;
+            const isDeleting = deletingListId === list.id;
 
-              return (
-                <motion.article
-                  variants={itemVariants} // Se enlaza con el stagger del padre automáticamente
-                  key={list.id}
-                  className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
-                >
-                  {isOwner ? (
-                    <button
-                      onClick={() =>
-                        setListToDelete({ id: list.id, name: list.name })
-                      }
-                      disabled={isDeleting}
-                      title="Eliminar lista"
-                      className="mx-3 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer "
-                    >
-                      <HiTrash className="text-xl" title="Eliminar" />
-                    </button>
-                  ) : (
-                    <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
-                  )}
-                  <Link to={`/todo/${list.id}`} className="flex-1 p-3">
-                    <h2 className="text-lg font-semibold text-white">
-                      {list.name}
-                    </h2>
-                    <div className="text-xs text-gray-400 flex flex-col gap-1 mt-2">
-                      <strong>
-                        {isOwner ? "Propietario" : "Compartida contigo"}
-                      </strong>
-                      <span>{formatRelativeTime(list.created_at)}</span>
+            return (
+              <motion.article
+                variants={itemVariants} // Se enlaza con el stagger del padre automáticamente
+                key={list.id}
+                className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
+              >
+                {isOwner ? (
+                  <button
+                    onClick={() =>
+                      setListToDelete({ id: list.id, name: list.name })
+                    }
+                    disabled={isDeleting}
+                    title="Eliminar lista"
+                    className="mx-3 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer "
+                  >
+                    <HiTrash className="text-xl" title="Eliminar" />
+                  </button>
+                ) : (
+                  <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
+                )}
+                <Link to={`/todo/${list.id}`} className="flex-1 p-3">
+                  <h2 className="text-lg font-semibold text-white">
+                    {list.name}
+                  </h2>
+
+                  <div className="text-xs text-gray-400 flex flex-col gap-1.5 mt-2">
+                    {/* Creador de la lista */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-gray-400">Creador:</span>
+                      <span className="font-medium text-blue-400">
+                        {list.owner_id === user?.id
+                          ? "Tú"
+                          : list.owner_nickname}
+                      </span>
                     </div>
-                  </Link>
-                  <FaAngleRight className=" absolute top-9 right-1 w-5 h-5 text-gray-300" />
-                </motion.article>
-              );
-            },
-          )}
+
+                    {/* Integrantes y permisos (si tiene miembros compartidos) */}
+                    {list.members && list.members.length > 0 && (
+                      <div className="flex flex-wrap gap-1 items-center mt-0.5">
+                        <span className="text-gray-500 text-[11px]">
+                          Miembros:
+                        </span>
+                        {list.members.map((member, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-[10px] flex items-center gap-1 text-gray-300"
+                          >
+                            {member.nickname}
+                            <span
+                              className={`font-semibold ${
+                                member.role === "write"
+                                  ? "text-green-400"
+                                  : "text-yellow-400"
+                              }`}
+                            >
+                              ({member.role === "write" ? "Edición" : "Lectura"}
+                              )
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <span className="text-[11px] text-gray-500 mt-0.5">
+                      {formatRelativeTime(list.created_at)}
+                    </span>
+                  </div>
+                </Link>
+                <FaAngleRight className=" absolute top-9 right-1 w-5 h-5 text-gray-300" />
+              </motion.article>
+            );
+          })}
 
         {!pickList &&
-          sharedLists.map(
-            (list: {
-              id: string;
-              name: string;
-              owner_id: string;
-              created_at: string;
-            }) => {
-              const isOwner = list.owner_id === user?.id;
-              const isDeleting = deletingListId === list.id;
+          sharedLists.map((list: ListItem) => {
+            const isOwner = list.owner_id === user?.id;
+            const isDeleting = deletingListId === list.id;
 
-              return (
-                <motion.article
-                  variants={itemVariants} // Se enlaza con el stagger del padre
-                  key={list.id}
-                  className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
-                >
-                  {isOwner ? (
-                    <button
-                      onClick={() =>
-                        setListToDelete({ id: list.id, name: list.name })
-                      }
-                      disabled={isDeleting}
-                      title="Eliminar lista"
-                      className="mx-3 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer "
-                    >
-                      <HiTrash className="text-xl" title="Eliminar" />
-                    </button>
-                  ) : (
-                    <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
-                  )}
-                  <Link to={`/todo/${list.id}`} className="flex-1 p-3">
-                    <h2 className="text-lg font-semibold text-white">
-                      {list.name}
-                    </h2>
-                    <div className="text-xs text-gray-400 flex flex-col gap-1 mt-2">
-                      <strong>
-                        {isOwner ? "Propietario" : "Compartida contigo"}
-                      </strong>
-                      <span>{formatRelativeTime(list.created_at)}</span>
-                    </div>
-                  </Link>
-                  <FaAngleRight className=" absolute top-9 right-1  w-5 h-5 text-gray-300" />
-                </motion.article>
-              );
-            },
-          )}
+            return (
+              <motion.article
+                variants={itemVariants} // Se enlaza con el stagger del padre
+                key={list.id}
+                className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
+              >
+                {isOwner ? (
+                  <button
+                    onClick={() =>
+                      setListToDelete({ id: list.id, name: list.name })
+                    }
+                    disabled={isDeleting}
+                    title="Eliminar lista"
+                    className="mx-3 text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer "
+                  >
+                    <HiTrash className="text-xl" title="Eliminar" />
+                  </button>
+                ) : (
+                  <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
+                )}
+                <Link to={`/todo/${list.id}`} className="flex-1 p-3">
+                  <h2 className="text-lg font-semibold text-white">
+                    {list.name}
+                  </h2>
+                  <div className="text-xs text-gray-400 flex flex-col gap-1 mt-2">
+                    <p>
+                      Propietario:{" "}<span>{list.owner_nickname}</span>
+                    </p>
+                    {/* Integrantes y permisos (si tiene miembros compartidos) */}
+                    {list.members && list.members.length > 0 && (
+                      <div className="flex flex-wrap gap-1 items-center mt-0.5">
+                        <span className="text-gray-500 text-[11px]">
+                          Invitados:
+                        </span>
+                        {list.members.map((member, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-gray-900 border border-gray-700 px-2 py-0.5 rounded text-[10px] flex items-center gap-1 text-gray-300"
+                          >
+                            {member.nickname}
+                            <span
+                              className={`font-semibold ${
+                                member.role === "write"
+                                  ? "text-green-400"
+                                  : "text-yellow-400"
+                              }`}
+                            >
+                              ({member.role === "write" ? "Edición" : "Lectura"}
+                              )
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <span>{formatRelativeTime(list.created_at)}</span>
+                  </div>
+                </Link>
+                <FaAngleRight className=" absolute top-9 right-1  w-5 h-5 text-gray-300" />
+              </motion.article>
+            );
+          })}
       </motion.div>
 
       {/* Modal*/}
