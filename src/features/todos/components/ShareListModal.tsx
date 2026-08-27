@@ -60,7 +60,7 @@ export const ShareListModal = ({
                 onClick={() => setRole("read")}
                 className={`flex items-center gap-2 py-2 px-3 rounded-md text-sm font-medium border transition-colors ${
                   role === "read"
-                    ? "bg-[#0d488b] border-[#8dbbf0] text-white"
+                    ? "bg-[#1163c2] border-[#8dbbf0] text-white"
                     : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
@@ -73,7 +73,7 @@ export const ShareListModal = ({
                 onClick={() => setRole("write")}
                 className={`flex items-center gap-2 py-2 px-3 rounded-md text-sm font-medium border transition-colors ${
                   role === "write"
-                    ? "bg-[#0d488b] border-[#8dbbf0] text-white"
+                    ? "bg-[#1163c2] border-[#8dbbf0] text-white"
                     : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
@@ -89,7 +89,7 @@ export const ShareListModal = ({
           <button
             onClick={() => generateCode(role)}
             disabled={isGenerating}
-            className="w-fit self-center bg-gray-600 hover:bg-[#0d488b]  p-2.5 rounded-md font-medium text-sm transition-colors disabled:opacity-50"
+            className="w-fit self-center bg-gray-600 hover:bg-[#1163c2]  p-2.5 rounded-md font-medium text-sm transition-colors disabled:opacity-50"
           >
             {isGenerating ? "Generando..." : "Generar Código de Invitación"}
           </button>

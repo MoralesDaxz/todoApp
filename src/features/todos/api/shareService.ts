@@ -1,4 +1,4 @@
-
+// src/features/todos/api/shareService.ts
 import { supabase } from "../../../config/supabase/supabaseClient";
 
 export interface InviteCode {
@@ -13,7 +13,7 @@ export const generateRandomCode = () => {
 
 export const createInviteCode = async (
   listId: string,
-  role: "read" | "write"
+  role: "read" | "write",
 ): Promise<InviteCode> => {
   const code = generateRandomCode();
 
@@ -34,4 +34,17 @@ export const joinListByCode = async (code: string): Promise<string> => {
 
   if (error) throw new Error(error.message);
   return data as string; // Retorna el list_id de la lista unida
+};
+
+export const removeMemberFromList = async (
+  listId: string,
+  userId: string,
+): Promise<void> => {
+  const { error } = await supabase
+    .from("list_members")
+    .delete()
+    .eq("list_id", listId)
+    .eq("user_id", userId);
+
+  if (error) throw new Error(error.message);
 };

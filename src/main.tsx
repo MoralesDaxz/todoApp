@@ -5,6 +5,8 @@ import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <main className="min-h-dvh max-w-4xl mx-auto px-6 pt-4 flex flex-col ">
       <App />
-    </StrictMode>,
+    </main>
+  </StrictMode>,
 );

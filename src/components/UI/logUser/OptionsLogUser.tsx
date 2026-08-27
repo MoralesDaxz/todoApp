@@ -58,7 +58,7 @@ export const OptionsLogUser = ({
         <button
           onClick={onLogoutClick}
           disabled={isLoggingOut}
-          className="py-2 px-3 w-full rounded-md bg-gray-400 hover:bg-gray-400  text-center transition-colors disabled:opacity-50  cursor-pointer "
+          className="py-2 px-3 w-full rounded-md bg-gray-400 hover:bg-gray-500  text-center transition-colors disabled:opacity-50  cursor-pointer "
         >
           {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
         </button>
