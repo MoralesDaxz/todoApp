@@ -1,6 +1,6 @@
 // features/todos/hooks/useLists.tsx
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyLists, createList, deleteListService } from "../api/listService";
+import { getLists, createList, deleteListService } from "../api/listService";
 import { useAuth } from "../../../context/AuthContext";
 import { useState } from "react";
 
@@ -11,7 +11,7 @@ export const useLists = () => {
 
   const { data: lists = [], isLoading } = useQuery({
     queryKey: ["lists", user?.id],
-    queryFn: () => getMyLists(user!.id),
+    queryFn: () => getLists(),
     enabled: !!user,
   });
 

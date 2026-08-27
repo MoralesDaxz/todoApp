@@ -2,6 +2,9 @@ export interface List {
   id: string;
   name: string;
   owner_id: string;
+  created_at: string;
+  owner?: { nickname: string } | null;
+  list_members?: ListMember[];
 }
 
 export interface ListMember {
