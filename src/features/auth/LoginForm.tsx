@@ -27,7 +27,9 @@ export const LoginForm = ({
   handleMagicLinkLogin,
   handlePasswordLogin,
 }: LoginFormProps) => {
-  const [loginMethod, setLoginMethod] = useState<"magic" | "password">("password");
+  const [loginMethod, setLoginMethod] = useState<"magic" | "password">(
+    "password",
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [typePass, setTypePass] = useState("password");
@@ -52,11 +54,11 @@ export const LoginForm = ({
   };
 
   return (
-    <section className="max-w-4xl mx-auto px-6 pt-4 flex flex-col ">
+    <section className="pt-20 max-w-4xl">
       <h1 className="font-bold text-4xl text-center">Iniciar Sesión</h1>
 
       {/* Selector de Método de Login */}
-      <div className="flex self-center gap-3 mt-6 bg-gray-900 p-1 rounded-md border border-gray-700">
+      <div className="flex justify-between self-center gap-3 mt-6 bg-gray-900 p-1 rounded-md border border-gray-700">
         <button
           type="button"
           onClick={() => {
@@ -64,7 +66,7 @@ export const LoginForm = ({
             setErrorMessage(null);
             setSuccessMessage(null);
           }}
-          className={`py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer ${
+          className={`w-full py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer ${
             loginMethod === "password"
               ? "bg-blue-400 hover:bg-blue-500 text-white"
               : "text-gray-400 hover:text-white"
@@ -79,7 +81,7 @@ export const LoginForm = ({
             setErrorMessage(null);
             setSuccessMessage(null);
           }}
-          className={`py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer  ${
+          className={`w-full py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer  ${
             loginMethod === "magic"
               ? "bg-blue-400 hover:bg-blue-500 text-white"
               : "text-gray-400 hover:text-white"
@@ -91,7 +93,7 @@ export const LoginForm = ({
 
       <form
         onSubmit={onSubmit}
-        className="flex flex-col gap-4 max-w-sm mx-auto mt-6 w-full"
+        className="flex flex-col gap-4  mx-auto mt-6 w-full"
       >
         {errorMessage && (
           <div className="bg-red-950/70 border border-red-800 text-red-300 text-sm p-3 rounded-md text-center">
@@ -111,6 +113,7 @@ export const LoginForm = ({
               Correo Electrónico
             </label>
             <input
+              autoFocus
               type="email"
               maxLength={70}
               placeholder="usuario@email.com"
@@ -169,14 +172,12 @@ export const LoginForm = ({
                 : "Iniciar sesión"}
         </button>
 
-       
-      <p className="mt-6 text-sm text-gray-400 text-center">
-        No tienes una cuenta?{" "}
-        <Link to="/register" className="text-blue-400 hover:underline">
-          Registrate
-        </Link>
-        
-      </p>
+        <p className="mt-6 text-sm text-gray-400 text-center">
+          No tienes una cuenta?{" "}
+          <Link to="/register" className="text-blue-400 hover:underline">
+            Registrate
+          </Link>
+        </p>
       </form>
     </section>
   );

@@ -43,8 +43,10 @@ export const RegisterForm = ({
   };
 
   return (
-    <section className="max-w-4xl mx-auto px-6 pt-4 flex flex-col items-center">
-      <h1 className="font-bold text-4xl text-white">Crear Cuenta</h1>
+    <section className="pt-20 max-w-4xl">
+      <h1 className="font-bold text-4xl text-white text-center">
+        Crear Cuenta
+      </h1>
 
       <form
         onSubmit={onSubmit}
@@ -68,6 +70,7 @@ export const RegisterForm = ({
               Nombre de Usuario / Apodo
             </label>
             <input
+              autoFocus
               type="text"
               placeholder="Tu apodo"
               value={nickname}
@@ -131,7 +134,7 @@ export const RegisterForm = ({
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 text-white p-2.5 rounded-md font-medium hover:bg-blue-600 disabled:opacity-50 w-full shadow-2xl transition-all cursor-pointer disabled:cursor-not-allowed"
+          className="w-fit self-center bg-blue-400 text-white p-2.5 rounded-md font-medium hover:bg-blue-500 disabled:opacity-50 shadow-2xl transition-all cursor-pointer disabled:cursor-not-allowed"
         >
           {loading ? "Registrando..." : "Registrarse"}
         </button>

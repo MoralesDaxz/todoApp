@@ -5,25 +5,26 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 
 export interface Member {
+  user_id: string;
   nickname: string;
   role: "read" | "write";
 }
 
 interface Props {
+  listOwner: string;
   listName: string;
-  user_id: string;
   listId: string;
-  listMembers: Member[] | null;
+  listMembers: Member[] | [];
   isOwner?: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
 }
 
 export const MembersInList = ({
+  listOwner,
   listName,
   listId,
   listMembers,
   isOwner,
-  user_id,
   onClose,
 }: Props) => {
   const data = listMembers ?? [];
@@ -41,7 +42,7 @@ export const MembersInList = ({
       header: "Rol",
       cell: (info) => (
         <span
-          className={` py-0.5 rounded text-xs font-semibold ${
+          className={`py-0.5 rounded text-xs font-semibold ${
             info.getValue() === "write" ? "text-green-400" : "text-yellow-400"
           }`}
         >
@@ -49,20 +50,20 @@ export const MembersInList = ({
         </span>
       ),
     },
-    // Columna de acciones (solo visible si el usuario actual es el propietario)
     ...(isOwner
       ? [
           {
             id: "actions",
             header: "Acción",
-            cell: () => {
+            cell: (info) => {
+              const member = info.row.original as Member;
               return (
                 <button
                   onClick={() => {
-                    removeMutation.mutate({ listId, userId: user_id });
+                    removeMutation.mutate({ listId, userId: member.user_id });
                   }}
                   disabled={removeMutation.isPending}
-                  className="text-red-400 hover:text-red-300 text-xs bg-red-950/50 border border-red-800 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                  className="text-red-400 hover:text-red-300 text-xs bg-red-950/50 border border-red-800 px-2 py-1 rounded transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   Quitar
                 </button>
@@ -87,30 +88,38 @@ export const MembersInList = ({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.75 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40  backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       >
-        <div className="absolute inset-1" onClick={() => onClose(false)} />
-        <div className="relative  border border-gray-700 rounded-lg p-4 max-w-md w-full text-white">
-          <div className="flex justify-center items-center mb-4 gap-2">
+        <div className="absolute inset-0" onClick={() => onClose(false)} />
+        <div className="relative border border-gray-700 bg-gray-900 rounded-lg p-4 max-w-md w-full text-white z-10">
+          <div className="flex justify-center items-center my-6 gap-2">
             <IoClose
               onClick={() => onClose(false)}
-              className="absolute top-1 right-1 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
+              className="absolute top-2 right-2 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-800 p-1 cursor-pointer hover:text-white"
             />
-            <span className="bg-gray-500  rounded-[50%] p-1">
-              <p className="h-6 w-6 text-center">{listMembers?.length}</p>
-            </span>
-            <p>Miembros de: </p>
-            <h3 className="font-bold">{listName}</h3>
-          </div>
 
-          <table className="w-full text-left">
+            <h3 className="font-bold text-xl ">{listName}</h3>
+          </div>
+          <span className="flex gap-1 text-sm">
+            <p className="font-medium text-gray-400">Propietario: </p>
+            <p className=" text-gray-100">{listOwner}</p>
+          </span>
+          <span className="flex gap-1 text-sm">
+            <p className="font-medium text-gray-400">Miembros: </p>
+
+            <p className=" text-gray-100">
+              {(listMembers?.length > 0 && listMembers?.length + 1) || 0}
+            </p>
+          </span>
+
+          <table className="w-full text-left mt-5 border-t border-t-gray-800">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="p-2 text-xs text-gray-400 uppercase border-b border-gray-800 "
+                      className="p-2 text-xs text-gray-400 uppercase border-b border-gray-800"
                     >
                       {header.isPlaceholder ? null : (
                         <table.FlexRender header={header} />

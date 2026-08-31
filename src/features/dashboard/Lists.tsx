@@ -1,6 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import { FaAngleRight, FaUsers } from "react-icons/fa";
-import { HiTrash } from "react-icons/hi2";
+import { HiTrash, HiUsers } from "react-icons/hi2";
 import { formatRelativeTime } from "../../utils/date";
 import { Link } from "react-router";
 import { useLists } from "../todos/hooks/useLists";
@@ -16,12 +16,14 @@ interface Prop {
 export const Lists: FC<Prop> = ({ pickList }) => {
   const { user } = useAuth();
   const { lists, deletingListId } = useLists();
-  const [isModalMembers, setIsModalMembers] = useState(false);
+
   const [listToDelete, setListToDelete] = useState<{
     id: string;
     name: string;
   } | null>(null);
-
+  // Guardamos la lista completa a consultar (o null si está cerrado)
+  const [selectedListForMembers, setSelectedListForMembers] =
+    useState<ListItem | null>(null);
   // 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -67,17 +69,6 @@ export const Lists: FC<Prop> = ({ pickList }) => {
 
             return (
               <div key={list.id}>
-                {user?.id && isModalMembers && (
-                  <MembersInList
-                    onClose={setIsModalMembers}
-                    listName={list.name}
-                    user_id={user?.id}
-                    listId={list.id}
-                    listMembers={list.members}
-                    isOwner={isOwner}
-                  />
-                )}
-
                 <motion.article
                   variants={itemVariants} // Se enlaza con el stagger del padre
                   className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
@@ -94,7 +85,7 @@ export const Lists: FC<Prop> = ({ pickList }) => {
                       <HiTrash className="text-xl" title="Eliminar" />
                     </button>
                   ) : (
-                    <FaUsers className="mx-3 w-5 h-5 text-blue-300" />
+                    <HiUsers className="mx-3 w-5 h-5 text-blue-300" />
                   )}
                   <div className="flex-1 p-3">
                     <h2 className="text-lg font-semibold text-white">
@@ -121,33 +112,16 @@ export const Lists: FC<Prop> = ({ pickList }) => {
                                   className="bg-gray-900 border border-gray-700 px-1 py-0.5 rounded text-[10px] flex items-center gap-1 text-gray-300"
                                 >
                                   {member.nickname}
-                                  {/*   <span
-                                  className={`font-semibold ${
-                                    member.role === "write"
-                                      ? "text-green-400"
-                                      : "text-yellow-400"
-                                  }`}
-                                >
-                                  (
-                                  {member.role === "write"
-                                    ? "Edición"
-                                    : "Lectura"}
-                                  )
-                                </span> */}
                                 </span>
                               ),
                           )}
-                          {list.members.length > 0 && (
-                            <>
-                              <span
-                                className="bg-gray-900 border border-gray-700 px-1 py-0.5 rounded text-[10px] flex items-center gap-1 text-gray-300"
-                                onClick={() => setIsModalMembers(true)}
-                              >
-                                <FaUsers className="w-3 h-3 text-blue-400" />{" "}
-                                Ver {list.members.length} mas...
-                              </span>
-                            </>
-                          )}
+                          <button
+                            onClick={() => setSelectedListForMembers(list)}
+                            className="  bg-gray-900 border border-gray-700 px-1 py-0.5 rounded text-[10px] flex items-center gap-1 text-gray-300 hover:text-white cursor-pointer"
+                          >
+                            <FaUsers className="w-3 h-3 text-blue-400" /> Ver
+                            más...
+                          </button>
                         </div>
                       )}
                       <span>Creado: {formatRelativeTime(list.created_at)}</span>
@@ -165,6 +139,17 @@ export const Lists: FC<Prop> = ({ pickList }) => {
           },
         )}
       </motion.div>
+      {/* Modal renderizado fuera del map */}
+      {selectedListForMembers && (
+        <MembersInList
+        listOwner={selectedListForMembers.owner_nickname}
+          listName={selectedListForMembers.name}
+          listId={selectedListForMembers.id}
+          listMembers={selectedListForMembers.members}
+          isOwner={selectedListForMembers.owner_id === user?.id}
+          onClose={() => setSelectedListForMembers(null)}
+        />
+      )}
       <ModalDeleteList
         listToDelete={listToDelete}
         setListToDelete={setListToDelete}
