@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { useJoinList } from "../todos/hooks/useJoinList";
 import { useLists } from "../todos/hooks/useLists";
 import { ErrorMessage } from "../../components/UI/errorMessage/ErrorMessage";
@@ -7,14 +7,12 @@ interface Props {
   setPickList: Dispatch<SetStateAction<boolean>>;
 }
 export const CreateOrJoinList = ({ setPickList }: Props) => {
-
   const [joinCode, setJoinCode] = useState("");
   const [actionType, setActionType] = useState<"create" | "join">("create");
   const [joinError, setJoinError] = useState<string | null>(null);
   const { createMutation } = useLists();
   const [newListName, setNewListName] = useState("");
-
-  
+  const inputRef = useRef<HTMLInputElement>(null);
   const handleCreateList = () => {
     if (!newListName.trim()) return;
     createMutation.mutate(newListName);
@@ -37,10 +35,14 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
       },
     });
   };
+    useEffect(() => {
+    if (actionType === actionType && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [actionType]);
 
   return (
     <div className="flex flex-col items-center mb-8">
-      {/* Selector Crear / Unirse */}
       <div className="w-[90%] flex  text-[0.9rem] gap-2 mb-2 bg-gray-950 p-1 rounded-lg border border-gray-800 text-sm">
         <button
           onClick={() => {
@@ -74,6 +76,7 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
         {actionType === "create" ? (
           <>
             <input
+              ref={inputRef}
               className="w-full outline-none text-lg px-2 bg-transparent text-white"
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
@@ -90,6 +93,7 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
         ) : (
           <>
             <input
+             ref={inputRef}
               className="w-full outline-none text-lg px-2 bg-transparent text-white font-mono uppercase tracking-wider placeholder:normal-case placeholder:font-sans"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value)}
@@ -105,7 +109,6 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
           </>
         )}
       </div>
-      {/* Mensaje de error al unirse */}
       <ErrorMessage message={joinError} />
     </div>
   );
