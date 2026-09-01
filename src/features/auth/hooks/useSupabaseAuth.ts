@@ -1,6 +1,6 @@
 // En src/hooks/useSupabaseAuth.ts[cite: 4]
 import { useState, useEffect } from "react";
-import { supabase } from "../config/supabase/supabaseClient";
+import { supabase } from "../../../config/supabase/supabaseClient";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NICKNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;

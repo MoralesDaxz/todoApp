@@ -1,11 +1,10 @@
-// src/pages/DashBoard.page.tsx
 import { useLists } from "../features/todos/hooks/useLists";
 import { useState } from "react";
-import LogUser from "../components/UI/logUser/LogUser";
-import { Lists } from "../features/dashboard/Lists";
-import Loader from "../components/UI/loader/Loader";
-import { CreateOrJoinList } from "../features/dashboard/Dinamic.CreateOrJoinList";
-import { PickLists } from "../features/dashboard/Dinamic.PickLists";
+import Loader from "../components/ui/loader/Loader";
+import { PickLists } from "../features/todos/components/Dinamic.PickLists";
+import { CreateOrJoinList } from "../features/todos/components/Dinamic.CreateOrJoinList";
+import LogUser from "../components/layout/userMenu/LogUser";
+import { Lists } from "../features/todos/components/Lists";
 
 export const DashBoard = () => {
   const { isLoading } = useLists();

@@ -13,10 +13,11 @@ import { FiShare2 } from "react-icons/fi";
 import { FaRegTrashAlt, FaUsers } from "react-icons/fa";
 import { TbSquareCheckFilled, TbUserPause } from "react-icons/tb";
 import { ShareListModal } from "../features/todos/components/ShareListModal";
-import LogUser from "../components/UI/logUser/LogUser";
-import { motion, type Variants } from "framer-motion";
-import { MembersInList } from "../features/dashboard/Table.MembersInList";
-import Loader from "../components/UI/loader/Loader";
+import { motion } from "framer-motion";
+import Loader from "../components/ui/loader/Loader";
+import LogUser from "../components/layout/userMenu/LogUser";
+import { MembersInList } from "../features/todos/components/Table.MembersInList";
+import { containerVariants, itemVariants } from "../utils/motionVariants";
 
 export const ToDo = () => {
   const { listId } = useParams<{ listId: string }>();
@@ -34,25 +35,21 @@ export const ToDo = () => {
 
   const [newTaskText, setNewTaskText] = useState("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  // Estado para el modal de miembros
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
   const currentList = lists.find((item) => item.id === listId);
   const listName = currentList?.name?.toUpperCase() || "";
-  // Definimos el orden de prioridad de los estados
+
   const statusOrder: Record<string, number> = {
     pending: 1,
     done_by_user: 2,
     confirmed: 3,
   };
 
-  // Ordenamos las tareas sin mutar el array original
   const sortedTodos = [...todos].sort(
     (a, b) => (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99),
   );
-  // Lógica de Roles
   const isOwner = currentList?.owner_id === user?.id;
   const isEditor = isOwner || memberRole === "write";
-
   const handleAddTask = () => {
     if (!newTaskText.trim() || !listId || !user) return;
     addMutation.mutate({
@@ -64,35 +61,16 @@ export const ToDo = () => {
   };
 
   const borderColors = {
-    pending: "border-[#f5f23a9a]",
-    done_by_user: "border-[#ff8903b2]",
-    confirmed: "border-[#53e7188a]",
-  };
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: "spring", stiffness: 300, damping: 24 },
-    },
+    pending: "border-[#f5f23a9a] shadow shadow-[#f5f23a9a]",
+    done_by_user: "border-[#ff8903b2] shadow shadow-[#ff8903b2]",
+    confirmed: "border-[#53e7188a] shadow shadow-[#53e7188a]",
   };
 
   if (isLoading) return <Loader />;
 
   return (
     <>
-      <section className="pt-4 flex flex-col relative">
+      <section className="pt-6 flex flex-col relative">
         <Link
           className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80"
           to={"/dashboard"}
@@ -102,7 +80,6 @@ export const ToDo = () => {
         </Link>
         <LogUser />
 
-        {/* Icono de Miembros al lado de Compartir */}
         <div className="absolute top-1 right-12 bg-gray-900 rounded-full cursor-pointer p-2 hover:bg-gray-800 transition-colors">
           <FaUsers
             className="h-5 w-5 text-gray-300 hover:text-white"

@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { useJoinList } from "../todos/hooks/useJoinList";
-import { useLists } from "../todos/hooks/useLists";
-import { ErrorMessage } from "../../components/UI/errorMessage/ErrorMessage";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
+import { useLists } from "../hooks/useLists";
+import { useJoinList } from "../hooks/useJoinList";
+import { ErrorMessage } from "../../../components/ui/errorMessage/ErrorMessage";
 
 interface Props {
   setPickList: Dispatch<SetStateAction<boolean>>;
@@ -28,14 +34,14 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
     joinMutation.mutate(joinCode, {
       onSuccess: () => {
         setJoinCode("");
-        setPickList(false); // Cambia automáticamente a la pestaña "Compartidas conmigo"
+        setPickList(false); 
       },
       onError: (err: Error) => {
         setJoinError(err.message || "No se pudo unirse a la lista.");
       },
     });
   };
-    useEffect(() => {
+  useEffect(() => {
     if (actionType === actionType && inputRef.current) {
       inputRef.current.focus();
     }
@@ -71,7 +77,7 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
           Unirse con Código
         </button>
       </div>
-      {/* Formulario Dinámico */}
+  
       <div className="w-[90%] p-3 rounded-lg flex items-center bg-gray-900 border border-gray-500 gap-2">
         {actionType === "create" ? (
           <>
@@ -93,7 +99,7 @@ export const CreateOrJoinList = ({ setPickList }: Props) => {
         ) : (
           <>
             <input
-             ref={inputRef}
+              ref={inputRef}
               className="w-full outline-none text-lg px-2 bg-transparent text-white font-mono uppercase tracking-wider placeholder:normal-case placeholder:font-sans"
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value)}

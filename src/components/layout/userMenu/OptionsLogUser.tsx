@@ -2,8 +2,9 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router";
-import { useSupabaseAuth } from "../../../hooks/useSupabaseAuth";
+
 import { FaUserCircle } from "react-icons/fa";
+import { useSupabaseAuth } from "../../../features/auth/hooks/useSupabaseAuth";
 
 interface Props {
   setIsActiveModalOptions: Dispatch<SetStateAction<boolean>>;
@@ -37,7 +38,10 @@ export const OptionsLogUser = ({
       />
 
       <div className=" text-[1rem] mt-2 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">
-      <FaUserCircle className="w-10 h-10 self-center text-gray-300" />
+        <FaUserCircle
+          className="w-10 h-10 self-center text-gray-300"
+         
+        />
         {nickname && (
           <p
             className="py-3 px-2 w-full rounded-md bg-gray-900 text-center"
@@ -58,6 +62,7 @@ export const OptionsLogUser = ({
         <button
           onClick={onLogoutClick}
           disabled={isLoggingOut}
+          title="Cerrar sesión"
           className="py-2 px-3 w-full rounded-md bg-gray-400 hover:bg-gray-500  text-center transition-colors disabled:opacity-50  cursor-pointer "
         >
           {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}

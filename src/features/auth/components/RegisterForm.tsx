@@ -1,19 +1,7 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router";
-
-interface RegisterFormProps {
-  email: string;
-  setEmail: (email: string) => void;
-  password: string;
-  setPassword: (password: string) => void;
-  nickname: string;
-  setNickname: (nickname: string) => void;
-  loading: boolean;
-  handleRegister: (
-    event: React.FormEvent,
-  ) => Promise<{ success: boolean; error?: string; message?: string }>;
-}
+import type { RegisterFormProps } from "../../types";
 
 export const RegisterForm = ({
   email,

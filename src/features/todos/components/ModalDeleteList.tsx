@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, type Dispatch, type FC, type SetStateAction } from "react";
 import { HiExclamationTriangle } from "react-icons/hi2";
-import { useLists } from "../todos/hooks/useLists";
-import { ErrorMessage } from "../../components/UI/errorMessage/ErrorMessage";
+import { useLists } from "../hooks/useLists";
+import { ErrorMessage } from "../../../components/ui/errorMessage/ErrorMessage";
+
 
 interface list {
   id: string;
@@ -19,7 +20,6 @@ export const ModalDeleteList: FC<Props> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { deleteList, deletingListId } = useLists();
 
-  // Confirmar eliminación desde el modal
   const confirmDelete = async () => {
     if (!listToDelete) return;
 
@@ -30,7 +30,6 @@ export const ModalDeleteList: FC<Props> = ({
       setErrorMessage(result.error || "No se pudo eliminar la lista.");
     }
 
-    // Cerramos el modal tras la acción
     setListToDelete(null);
   };
   return (

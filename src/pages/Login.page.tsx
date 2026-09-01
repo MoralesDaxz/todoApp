@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { LoginForm } from "../features/auth/LoginForm";
-import { useSupabaseAuth } from "../hooks/useSupabaseAuth";
+import { LoginForm } from "../features/auth/components/LoginForm";
 import { useNavigate } from "react-router";
+import { useSupabaseAuth } from "../features/auth/hooks/useSupabaseAuth";
 
 const Login = () => {
   const navigate = useNavigate();

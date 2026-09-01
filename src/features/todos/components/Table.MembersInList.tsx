@@ -1,23 +1,10 @@
 import { useTable, tableFeatures, type ColumnDef } from "@tanstack/react-table";
-import { useRemoveMember } from "../todos/hooks/useRemoveMember";
-import type { Dispatch, SetStateAction } from "react";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
+import { useRemoveMember } from "../hooks/useRemoveMember";
+import type { TableMember, TableProps } from "../../types";
 
-export interface Member {
-  user_id: string;
-  nickname: string;
-  role: "read" | "write";
-}
-
-interface Props {
-  listOwner: string;
-  listName: string;
-  listId: string;
-  listMembers: Member[] | [];
-  isOwner?: boolean;
-  onClose: Dispatch<SetStateAction<boolean>>;
-}
 
 export const MembersInList = ({
   listOwner,
@@ -26,12 +13,12 @@ export const MembersInList = ({
   listMembers,
   isOwner,
   onClose,
-}: Props) => {
+}: TableProps) => {
   const data = listMembers ?? [];
   const removeMutation = useRemoveMember();
   const features = tableFeatures({});
 
-  const columns: Array<ColumnDef<typeof features, Member>> = [
+  const columns: Array<ColumnDef<typeof features, TableMember>> = [
     {
       accessorKey: "nickname",
       header: "Usuario",
@@ -56,7 +43,7 @@ export const MembersInList = ({
             id: "actions",
             header: "Acción",
             cell: (info) => {
-              const member = info.row.original as Member;
+              const member = info.row.original as TableMember;
               return (
                 <button
                   onClick={() => {
@@ -69,7 +56,7 @@ export const MembersInList = ({
                 </button>
               );
             },
-          } as ColumnDef<typeof features, Member>,
+          } as ColumnDef<typeof features, TableMember>,
         ]
       : []),
   ];

@@ -3,12 +3,7 @@ import { FiCopy, FiCheck, FiX, FiEdit3 } from "react-icons/fi";
 import { useShareList } from "../hooks/useShareList";
 import { FaRegEye } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa"; // Si usas react-icons
-interface ShareListModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  listId: string;
-  listName: string;
-}
+import type { ShareListModalProps } from "../../types";
 
 export const ShareListModal = ({
   isOpen,
@@ -51,7 +46,7 @@ export const ShareListModal = ({
         <h2 className="text-xl font-bold mb-1">Compartir Lista</h2>
         <p className="text-md text-gray-400 mt-1 mb-6">{listName}</p>
 
-        {/* Selección de Rol, deben desaparecer estos buttoms al generarse un codigo, y habilitar para generar nuevo codigo*/}
+       
         <div className="flex items-end justify-center gap-3 mb-6">
           {!!generatedCode === false && (
             <>
@@ -121,7 +116,7 @@ export const ShareListModal = ({
                 )}
               </button>
             </div>
-            {/* !!!TODO Implementar nuevo servicio, debe validar si esta logueado, verificar si existe ese codigo habil en BD (intermedio), y una vez verificado redirija a la lista con lso permisos habilitados, sino esta logueado redirigir al loguin*/}
+            {/* !!TODO Implementar nuevo servicio, debe validar si esta logueado, verificar si existe ese codigo habil en BD (intermedio), y una vez verificado redirija a la lista con lso permisos habilitados, sino esta logueado redirigir al loguin*/}
               <a
                 href={whatsappLink}
                 target="_blank"
