@@ -33,6 +33,7 @@ export const OptionsLogUser = ({
   return (
     <div className="relative w-72 h-auto border border-gray-300 rounded-sm pt-10 px-2 backdrop-blur-sm transition-all duration-300 bg-gray-800 text-white">
       <IoClose
+      title="Cerrar"
         onClick={() => setIsActiveModalOptions(false)}
         className="absolute top-1 right-1 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
       />

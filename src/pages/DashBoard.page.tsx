@@ -8,7 +8,9 @@ import { Lists } from "../features/todos/components/Lists";
 
 export const DashBoard = () => {
   const { isLoading } = useLists();
-  const [pickList, setPickList] = useState<boolean>(true);
+  const [pickList, setPickList] = useState<"myLists" | "sharedLists">(
+    "myLists",
+  );
 
   if (isLoading) {
     return <Loader />;
@@ -18,7 +20,7 @@ export const DashBoard = () => {
     <section>
       <LogUser />
       <h1 className="text-center text-4xl my-8 font-medium">Gestiones</h1>
-      <CreateOrJoinList setPickList={setPickList} />
+      <CreateOrJoinList />
       <PickLists pickList={pickList} setPickList={setPickList} />
       <Lists pickList={pickList} />
     </section>

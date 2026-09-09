@@ -38,7 +38,22 @@ export const useTodos = (listId: string | null) => {
     },
   });
 
-  
+   const pendingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase
+        .from("todos")
+        .update({ status: "pending" })
+        .eq("id", id)
+        .select(); 
+
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos", listId] });
+    },
+  });
+
   const markAsDoneMutation = useMutation({
     mutationFn: async (id: string) => {
       const { data, error } = await supabase
@@ -107,6 +122,7 @@ export const useTodos = (listId: string | null) => {
     todos,
     isLoading,
     addMutation,
+    pendingMutation,
     markAsDoneMutation,
     confirmMutation,
     deleteMutation,
