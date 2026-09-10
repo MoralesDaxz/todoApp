@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { LoginForm } from "../features/auth/components/LoginForm";
 import { useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 import { useSupabaseAuth } from "../features/auth/hooks/useSupabaseAuth";
+import { LoginForm } from "../features/auth/components/LoginForm";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     loading,
     email,
@@ -16,12 +17,17 @@ const Login = () => {
     handlePasswordLogin,
     cooldown,
   } = useSupabaseAuth();
-  
-  const { user } = useAuth();
 
   useEffect(() => {
-    if (user !== null) {
-      navigate("/dashboard", { replace: true });
+    // Redirigir SOLO si el usuario está autenticado
+    if (user) {
+      const pendingCode = sessionStorage.getItem("pendingJoinCode");
+
+      if (pendingCode) {
+        navigate(`/join/${pendingCode}`, { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     }
   }, [user, navigate]);
 

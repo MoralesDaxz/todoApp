@@ -35,7 +35,7 @@ export const ShareListModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-      <div className="flex flex-col bg-gray-900 border border-gray-500 rounded-lg max-w-md w-full p-6 text-white shadow-2xl relative">
+      <div className="flex flex-col bg-gray-900 border border-gray-500 rounded-lg max-w-md w-full p-4 text-white shadow-2xl relative">
         <button
           onClick={handleClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -89,21 +89,21 @@ export const ShareListModal = ({
             {isGenerating ? "Generando..." : "Generar Código de Invitación"}
           </button>
         ) : (
-          <div className="flex flex-col  gap-2">
+          <div className="flex flex-col gap-2">
             <label className="w-fit text-xs text-gray-400">
               Código generado (Permiso:{" "}
               {role === "read" ? "Lectura" : "Edición"})
             </label>
-            <div className="flex items-center gap-2 bg-gray-950 border border-gray-700 p-2 rounded-md">
+            <div className="flex  justify-around items-center bg-gray-950 border border-gray-700 rounded-md">
               <input
                 type="text"
                 readOnly
                 value={generatedCode}
-                className="bg-transparent font-mono text-center text-lg tracking-widest text-yellow-400 flex-1 outline-none"
+                className="bg-transparent font-mono text-center text-lg tracking-widest text-yellow-400 outline-none py-2 w-full"
               />
               <button
                 onClick={() => copyToClipboard(generatedCode)}
-                className="bg-gray-800 hover:bg-gray-700 p-2 rounded-md text-gray-200 transition-colors flex items-center gap-1 text-sm"
+                className="bg-gray-800 hover:bg-gray-700 p-2 rounded-md text-gray-200 transition-colors flex items-center text-sm mr-1"
               >
                 {copied ? (
                   <>
