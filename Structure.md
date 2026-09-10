@@ -5,20 +5,21 @@
         ├── favicon.svg
         ├── icons.svg
     └── 📁src
-        └── 📁assets
-            ├── hero.png
-            ├── react.svg
-            ├── vite.svg
         └── 📁components
             └── 📁routes
                 ├── ProtectedRoute.tsx
             └── 📁UI
+                └── 📁errorMessage
+                    ├── ErrorMessage.tsx
+                └── 📁loader
+                    ├── Loader.tsx
                 └── 📁logUser
                     ├── LogUser.tsx
                     ├── menu.css
                     ├── Menu.tsx
                     ├── OptionsLogUser.tsx
-                ├── Navbar.tsx
+                └── 📁navbar
+                    ├── Navbar.tsx
         └── 📁config
             └── 📁supabase
                 ├── supabaseClient.ts
@@ -26,25 +27,36 @@
             ├── AuthContext.tsx
         └── 📁features
             └── 📁auth
-                ├── AuthError.tsx
-                ├── AuthSuccess.tsx
                 ├── LoginForm.tsx
-                ├── VerifyingAuth.tsx
-                ├── Welcome.tsx
+                ├── RegisterForm.tsx
+            └── 📁dashboard
+                ├── Dinamic.CreateOrJoinList.tsx
+                ├── Dinamic.PickLists.tsx
+                ├── Lists.tsx
+                ├── ModalDeleteList.tsx
+                ├── Table.MembersInList.tsx
             └── 📁todos
                 └── 📁api
                     ├── listService.ts
+                    ├── shareService.ts
                     ├── todoService.ts
+                └── 📁components
+                    ├── ShareListModal.tsx
                 └── 📁hooks
-                    ├── useLists.tsx
-                    ├── useTodos.tsx
+                    ├── useJoinList.ts
+                    ├── useLists.ts
+                    ├── useRemoveMember.ts
+                    ├── useShareList.ts
+                    ├── useTodos.ts
         └── 📁hooks
             ├── useSupabaseAuth.ts
         └── 📁pages
             ├── DashBoard.page.tsx
             ├── Login.page.tsx
+            ├── Register.page.tsx
             ├── ToDo.page.tsx
         └── 📁types
+            ├── dashboard.ts
             ├── todo.ts
         └── 📁utils
             ├── date.ts
@@ -56,9 +68,12 @@
     ├── .gitignore
     ├── eslint.config.js
     ├── index.html
+    ├── manifest.json
+    ├── NOTE.TXT
     ├── package-lock.json
     ├── package.json
     ├── README.md
+    ├── structure.md
     ├── tsconfig.app.json
     ├── tsconfig.json
     ├── tsconfig.node.json

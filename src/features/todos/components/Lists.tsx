@@ -1,17 +1,19 @@
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaAngleRight, FaUsers } from "react-icons/fa";
 import { HiTrash, HiUsers } from "react-icons/hi2";
-import { formatRelativeTime } from "../../utils/date";
 import { Link } from "react-router";
-import { useLists } from "../todos/hooks/useLists";
-import { useAuth } from "../../context/AuthContext";
 import { useState, type FC } from "react";
-import type { ListItem } from "../todos/api/listService";
-import { ModalDeleteList } from "./ModalDeleteList";
+import { useAuth } from "../../../context/AuthContext";
+import { useLists } from "../hooks/useLists";
+import type { ListItem } from "../../types";
 import { MembersInList } from "./Table.MembersInList";
+import { ModalDeleteList } from "./ModalDeleteList";
+import { formatRelativeTime } from "../../../utils/date";
+import { containerVariants, itemVariants } from "../../../utils/motionVariants";
+import { BsFillExclamationSquareFill } from "react-icons/bs";
 
 interface Prop {
-  pickList: boolean;
+  pickList: "myLists" | "sharedLists";
 }
 export const Lists: FC<Prop> = ({ pickList }) => {
   const { user } = useAuth();
@@ -21,10 +23,9 @@ export const Lists: FC<Prop> = ({ pickList }) => {
     id: string;
     name: string;
   } | null>(null);
-  // Guardamos la lista completa a consultar (o null si está cerrado)
+
   const [selectedListForMembers, setSelectedListForMembers] =
     useState<ListItem | null>(null);
-  // 1. Ordenamos las listas: la fecha más reciente (b) menos la más antigua (a)
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
@@ -33,26 +34,6 @@ export const Lists: FC<Prop> = ({ pickList }) => {
     sharedLists: sortedLists.filter((list) => list.owner_id !== user?.id),
   };
 
-  // 1. Variante para el grid (Padre)
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1, // Tiempo en segundos entre cada tarjeta
-      },
-    },
-  };
-
-  // 2. Variante para cada tarjeta (Hijo)
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, x: -50 }, // Entra desde -50px a la izquierda
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: "spring", stiffness: 300, damping: 24 }, // Animación fluida
-    },
-  };
   return (
     <>
       <motion.div
@@ -60,17 +41,17 @@ export const Lists: FC<Prop> = ({ pickList }) => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        key={pickList ? "my-lists" : "shared-lists"} // Reinicia la animación al cambiar de vista
+        key={pickList ? "myLists" : "sharedLists"} // Reinicia la animación al cambiar de vista
       >
-        {listsMap[pickList ? "myLists" : "sharedLists"].map(
-          (list: ListItem) => {
+        {listsMap[pickList].length > 0 ? (
+          listsMap[pickList].map((list: ListItem) => {
             const isOwner = list.owner_id === user?.id;
             const isDeleting = deletingListId === list.id;
 
             return (
               <div key={list.id}>
                 <motion.article
-                  variants={itemVariants} // Se enlaza con el stagger del padre
+                  variants={itemVariants}
                   className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
                 >
                   {isOwner ? (
@@ -136,13 +117,21 @@ export const Lists: FC<Prop> = ({ pickList }) => {
                 </motion.article>
               </div>
             );
-          },
+          })
+        ) : (
+          <div className="col-span-2  flex gap-3 items-center justify-center p-2 bg-gray-950 rounded-md">
+            <BsFillExclamationSquareFill className="text-gray-200 w-10 h-10" />
+            <p className=" p-5 text-gray-500 font-medium text-md w-60 max-w-80">
+              Aun no tienes nada cargado, crea una lista o unete con codigo a
+              otra.
+            </p>
+          </div>
         )}
       </motion.div>
-      {/* Modal renderizado fuera del map */}
+
       {selectedListForMembers && (
         <MembersInList
-        listOwner={selectedListForMembers.owner_nickname}
+          listOwner={selectedListForMembers.owner_nickname}
           listName={selectedListForMembers.name}
           listId={selectedListForMembers.id}
           listMembers={selectedListForMembers.members}

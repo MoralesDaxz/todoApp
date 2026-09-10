@@ -1,21 +1,7 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router";
-
-interface LoginFormProps {
-  email: string;
-  setEmail: (email: string) => void;
-  password?: string;
-  setPassword?: (password: string) => void;
-  loading: boolean;
-  cooldown?: number;
-  handleMagicLinkLogin: (
-    e: React.FormEvent,
-  ) => Promise<{ success: boolean; error?: string; message?: string }>;
-  handlePasswordLogin: (
-    e: React.FormEvent,
-  ) => Promise<{ success: boolean; error?: string }>;
-}
+import type { LoginFormProps } from "../../types";
 
 export const LoginForm = ({
   email,
@@ -57,7 +43,6 @@ export const LoginForm = ({
     <section className="pt-20 max-w-4xl">
       <h1 className="font-bold text-4xl text-center">Iniciar Sesión</h1>
 
-      {/* Selector de Método de Login */}
       <div className="flex justify-between self-center gap-3 mt-6 bg-gray-900 p-1 rounded-md border border-gray-700">
         <button
           type="button"

@@ -6,17 +6,18 @@ import { useLists } from "../features/todos/hooks/useLists";
 import {
   MdKeyboardArrowLeft,
   MdOutlineCheckBoxOutlineBlank,
-  MdOutlineLibraryAddCheck,
 } from "react-icons/md";
-import { BsPlusCircleFill } from "react-icons/bs";
 import { FiShare2 } from "react-icons/fi";
 import { FaRegTrashAlt, FaUsers } from "react-icons/fa";
-import { TbSquareCheckFilled, TbUserPause } from "react-icons/tb";
+import { TbSquareCheckFilled } from "react-icons/tb";
 import { ShareListModal } from "../features/todos/components/ShareListModal";
-import LogUser from "../components/UI/logUser/LogUser";
-import { motion, type Variants } from "framer-motion";
-import { MembersInList } from "../features/dashboard/Table.MembersInList";
-import Loader from "../components/UI/loader/Loader";
+import { motion } from "framer-motion";
+import Loader from "../components/ui/loader/Loader";
+import LogUser from "../components/layout/userMenu/LogUser";
+import { MembersInList } from "../features/todos/components/Table.MembersInList";
+import { containerVariants, itemVariants } from "../utils/motionVariants";
+import { FaSquarePlus } from "react-icons/fa6";
+import { ErrorMessage } from "../components/ui/errorMessage/ErrorMessage";
 
 export const ToDo = () => {
   const { listId } = useParams<{ listId: string }>();
@@ -27,34 +28,31 @@ export const ToDo = () => {
     isLoading,
     memberRole,
     addMutation,
-    markAsDoneMutation,
+    pendingMutation,
     confirmMutation,
     deleteMutation,
   } = useTodos(listId || null);
 
   const [newTaskText, setNewTaskText] = useState("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  // Estado para el modal de miembros
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
   const currentList = lists.find((item) => item.id === listId);
   const listName = currentList?.name?.toUpperCase() || "";
-  // Definimos el orden de prioridad de los estados
+
   const statusOrder: Record<string, number> = {
     pending: 1,
     done_by_user: 2,
     confirmed: 3,
   };
 
-  // Ordenamos las tareas sin mutar el array original
   const sortedTodos = [...todos].sort(
     (a, b) => (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99),
   );
-  // Lógica de Roles
   const isOwner = currentList?.owner_id === user?.id;
   const isEditor = isOwner || memberRole === "write";
-
   const handleAddTask = () => {
-    if (!newTaskText.trim() || !listId || !user) return;
+    if (newTaskText.length > 29 || !newTaskText.trim() || !listId || !user)
+      return;
     addMutation.mutate({
       list_id: listId,
       task: newTaskText,
@@ -64,35 +62,31 @@ export const ToDo = () => {
   };
 
   const borderColors = {
-    pending: "border-[#f5f23a9a]",
-    done_by_user: "border-[#ff8903b2]",
-    confirmed: "border-[#53e7188a]",
+    pending: "border-[#e8e7e9c9] shadow shadow-[#e8e7e9c9]",
+    done_by_user: "border-[#ff8903b2] shadow shadow-[#ff8903b2]",
+    confirmed: "border-[#4ff00fd2] shadow shadow-[#4ff00fd2]",
   };
+  const handleMutation = (id: string, status: string) => {
+    //- owner - pending -> confirmed
+    //- !owner - pending -> done_by_user -> owner -> confirmed
+    //- "done_by_user" es un flag de control en caso de implementar el owner como supervisor
+    switch (status) {
+      case "pending":
+        confirmMutation.mutate(id);
+        break;
+      case "confirmed":
+        pendingMutation.mutate(id);
+        break;
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+      default:
+        break;
+    }
   };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: "spring", stiffness: 300, damping: 24 },
-    },
-  };
-
   if (isLoading) return <Loader />;
 
   return (
     <>
-      <section className="pt-4 flex flex-col relative">
+      <section className="pt-6 flex flex-col relative">
         <Link
           className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80"
           to={"/dashboard"}
@@ -102,7 +96,6 @@ export const ToDo = () => {
         </Link>
         <LogUser />
 
-        {/* Icono de Miembros al lado de Compartir */}
         <div className="absolute top-1 right-12 bg-gray-900 rounded-full cursor-pointer p-2 hover:bg-gray-800 transition-colors">
           <FaUsers
             className="h-5 w-5 text-gray-300 hover:text-white"
@@ -122,22 +115,26 @@ export const ToDo = () => {
         )}
 
         <h1 className="text-center text-4xl my-8 font-medium">{listName}</h1>
-        <article className="self-center items-center flex gap-1 bg-gray-900 border border-gray-500 rounded-md p-2">
+        <form className="self-center items-center flex gap-1 bg-gray-900 border border-gray-500 rounded-md p-2">
           <input
             className="outline-none text-xl p-2"
             autoFocus
             value={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
             onKeyDown={(e) => (e.key === "Enter" ? handleAddTask() : null)}
+            maxLength={30}
             placeholder="Añadir tarea..."
           />
 
-          <BsPlusCircleFill
+          <FaSquarePlus
             className="w-11 h-11 cursor-pointer"
             color="#51a2ff"
             onClick={handleAddTask}
           />
-        </article>
+        </form>
+        {newTaskText.length >= 30 && (
+          <ErrorMessage message={"Excedes el maximo de caracteres (30max)"} />
+        )}
 
         <motion.ul
           variants={containerVariants}
@@ -149,7 +146,7 @@ export const ToDo = () => {
             <motion.div
               variants={itemVariants}
               key={todo.id}
-              className={`my-2 flex justify-between items-stretch gap-2 bg-gray-950 rounded-md border ${
+              className={`my-3 flex justify-between items-stretch gap-2 bg-gray-950 rounded-md border ${
                 borderColors[todo.status]
               }`}
             >
@@ -159,39 +156,21 @@ export const ToDo = () => {
                   className="border-r border-r-gray-700 flex items-center justify-center px-2"
                   onClick={() => deleteMutation.mutate(todo.id)}
                 >
-                  <FaRegTrashAlt className="text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer" />
+                  <FaRegTrashAlt className="text-red-500 hover:text-red-700 rounded-md transition-colors cursor-pointer opacity-60" />
                 </button>
               )}
 
-              <li className="w-full flex gap-2 items-center p-4">
+              <li
+                className="w-full flex gap-2 items-center p-4 cursor-pointer"
+                onClick={() => handleMutation(todo.id, todo.status)}
+              >
                 <span className="ml-1 flex-1 text-[1.1rem]">{todo.task}</span>
-                {isOwner && todo.status === "pending" && (
-                  <MdOutlineCheckBoxOutlineBlank
-                    className="text-yellow-300 w-6 h-7 mr-1 cursor-pointer"
-                    onClick={() => confirmMutation.mutate(todo.id)}
-                  />
-                )}
-
-                {!isOwner && todo.status === "pending" && (
-                  <MdOutlineCheckBoxOutlineBlank
-                    className="text-yellow-300 w-6 h-7 mr-1 cursor-pointer"
-                    onClick={() => markAsDoneMutation.mutate(todo.id)}
-                  />
-                )}
-
-                {isOwner && todo.status === "done_by_user" && (
-                  <MdOutlineLibraryAddCheck
-                    className="text-orange-400 w-6 h-7 mr-1 cursor-pointer"
-                    onClick={() => confirmMutation.mutate(todo.id)}
-                  />
-                )}
-
-                {todo.status === "done_by_user" && !isOwner && (
-                  <TbUserPause className="text-yellow-500 w-6 h-7 mr-1" />
+                {todo.status === "pending" && (
+                  <MdOutlineCheckBoxOutlineBlank className="text-[#e8e7e9] w-6 h-7 mr-1 cursor-pointer" />
                 )}
 
                 {todo.status === "confirmed" && (
-                  <TbSquareCheckFilled className="text-green-500 w-6 h-7 mr-1" />
+                  <TbSquareCheckFilled className="text-green-500 w-6 h-7 mr-1 cursor-pointer" />
                 )}
               </li>
             </motion.div>

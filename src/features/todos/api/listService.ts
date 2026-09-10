@@ -1,19 +1,6 @@
 // src/features/todos/api/listService.ts
 import { supabase } from "../../../config/supabase/supabaseClient";
-export interface ListMember {
-  user_id: string; // <-- Añadir este campo
-  nickname: string;
-  role: "read" | "write";
-}
-
-export interface ListItem {
-  id: string;
-  name: string;
-  owner_id: string;
-  created_at: string;
-  owner_nickname: string;
-  members: ListMember[];
-}
+import type { ListItem } from "../../types";
 
 export const getLists = async (): Promise<ListItem[]> => {
   const { data, error } = await supabase.from("v_user_lists").select("*");

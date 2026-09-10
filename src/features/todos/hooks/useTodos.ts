@@ -2,15 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../config/supabase/supabaseClient";
 import { fetchTodos, addTodo } from "../api/todoService";
 import { useAuth } from "../../../context/AuthContext";
+import type { Todo } from "../../types";
 
-export interface Todo {
-  id: string;
-  list_id: string;
-  task: string;
-  status: "pending" | "done_by_user" | "confirmed";
-  created_by: string;
-  created_at?: string; 
-}
 
 export const useTodos = (listId: string | null) => {
   const { user } = useAuth();
@@ -27,7 +20,7 @@ export const useTodos = (listId: string | null) => {
         .eq("list_id", listId)
         .eq("user_id", user.id)
         .maybeSingle();
-      return data?.role || null; // 'read' | 'write' | null
+      return data?.role || null; 
     },
     enabled: !!listId && !!user?.id,
   });
@@ -45,7 +38,22 @@ export const useTodos = (listId: string | null) => {
     },
   });
 
-  
+   const pendingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { data, error } = await supabase
+        .from("todos")
+        .update({ status: "pending" })
+        .eq("id", id)
+        .select(); 
+
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos", listId] });
+    },
+  });
+
   const markAsDoneMutation = useMutation({
     mutationFn: async (id: string) => {
       const { data, error } = await supabase
@@ -95,7 +103,6 @@ export const useTodos = (listId: string | null) => {
   });
 //Editar nombre en tareas, no implementaremos, dejaremos solo eliminar
   const renameMutation = useMutation({
-    // Recibe un objeto con el ID de la tarea y el nuevo texto
     mutationFn: async ({ id, newTask }: { id: string; newTask: string }) => {
       const { data, error } = await supabase
         .from("todos")
@@ -115,6 +122,7 @@ export const useTodos = (listId: string | null) => {
     todos,
     isLoading,
     addMutation,
+    pendingMutation,
     markAsDoneMutation,
     confirmMutation,
     deleteMutation,

@@ -1,11 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import Login from "./pages/Login.page";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/routes/ProtectedRoute";
 import { ToDo } from "./pages/ToDo.page";
 import { DashBoard } from "./pages/DashBoard.page";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Register from "./pages/Register.page";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
