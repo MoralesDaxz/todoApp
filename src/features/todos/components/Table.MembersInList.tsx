@@ -1,5 +1,4 @@
 import { useTable, tableFeatures, type ColumnDef } from "@tanstack/react-table";
-
 import { AnimatePresence, motion } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 import { useRemoveMember } from "../hooks/useRemoveMember";
