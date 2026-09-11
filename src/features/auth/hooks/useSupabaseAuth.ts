@@ -180,6 +180,69 @@ export const useSupabaseAuth = () => {
       setLoading(false);
     }
   };
+  // Solicitud de envío del correo de recuperación
+  const handleSendPasswordReset = async (
+    emailToReset: string,
+  ): Promise<{ success: boolean; error?: string; message?: string }> => {
+    const cleanEmail = emailToReset.trim().toLowerCase();
+
+    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+      return { success: false, error: "Ingresa un correo electrónico válido." };
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) return { success: false, error: error.message };
+
+      return {
+        success: true,
+        message:
+          "Te hemos enviado las instrucciones para restablecer tu contraseña.",
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : "Error de red",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Actualización con la nueva contraseña
+  const handleUpdatePassword = async (
+    newPassword: string,
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!newPassword || newPassword.length < 8) {
+      return {
+        success: false,
+        error: "La contraseña debe tener al menos 8 caracteres.",
+      };
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) return { success: false, error: error.message };
+
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        error:
+          err instanceof Error ? err.message : "Error al actualizar contraseña",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // LOGOUT
   const handleLogout = async () => {
@@ -207,6 +270,8 @@ export const useSupabaseAuth = () => {
     handleRegister,
     handleMagicLinkLogin,
     handlePasswordLogin,
+    handleSendPasswordReset,
+    handleUpdatePassword,
     handleLogout,
   };
 };

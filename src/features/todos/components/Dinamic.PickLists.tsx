@@ -24,7 +24,7 @@ export const PickLists = ({ setPickList, pickList }: Props) => {
           onClick={() => setPickList("sharedLists")}
           className={`${stylePickList} +  ${pickList === "sharedLists" ? "bg-[#1163c2] text-white font-medium shadow-md" : "bg-gray-700 text-gray-200 hover:text-white"}`}
         >
-          <p>Compartidas</p>
+          <p>Compartidas conmigo</p>
           <HiUsers className="w-5 h-5" />
         </button>
       </div>

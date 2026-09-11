@@ -23,7 +23,7 @@ export const ShareListModal = ({
   } = useShareList(listId);
   const shareUrl = `${window.location.origin}/join/${generatedCode}`;
   const whatsappMessage = encodeURIComponent(
-    `¡Hola! Te invito a colaborar en mi lista de Gestiones. Haz clic aquí para unirte: ${shareUrl}`,
+    `¡Hola! Te invito a colaborar en ${listName}. Haz clic aquí para unirte: ${shareUrl}`,
   );
   const whatsappLink = `https://wa.me/?text=${whatsappMessage}`;
   if (!isOpen) return null;
@@ -44,7 +44,7 @@ export const ShareListModal = ({
         </button>
 
         <h2 className="text-xl font-bold mb-1">Compartir Lista</h2>
-        <p className="text-md text-gray-400 mt-1 mb-6">{listName}</p>
+        <p className="text-md text-gray-400 mt-3 mb-1">{listName}</p>
 
        
         <div className="flex items-end justify-center gap-3 mb-6">
@@ -92,7 +92,7 @@ export const ShareListModal = ({
           <div className="flex flex-col gap-2">
             <label className="w-fit text-xs text-gray-400">
               Código generado (Permiso:{" "}
-              {role === "read" ? "Lectura" : "Edición"})
+              <span className="font-bold">{role === "read" ? "Lectura" : "Edición"}</span>)
             </label>
             <div className="flex  justify-around items-center bg-gray-950 border border-gray-700 rounded-md">
               <input

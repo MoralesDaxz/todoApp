@@ -128,12 +128,16 @@ export const RegisterForm = ({
         </button>
       </form>
 
-      <p className="mt-6 text-sm text-gray-400 text-center">
-        ¿Ya tienes una cuenta?{" "}
-        <Link to="/login" className="text-blue-400 hover:underline">
-          Inicia sesión
-        </Link>
-      </p>
+            <div className="flex flex-col gap-4">
+          <Link to="/login" className=" flex gap-2 mt-6 text-sm text-gray-400">
+            ¿Ya tienes una cuenta?{" "}
+            <p className="text-blue-400 hover:underline">Ingresa</p>
+          </Link>
+          <Link to="/forgot-password" className=" flex gap-2  text-sm text-gray-400">
+            ¿Olvidaste tu contraseña?{" "}
+            <p className="text-blue-400 hover:underline">Recuperala</p>
+          </Link>
+        </div>
     </section>
   );
 };

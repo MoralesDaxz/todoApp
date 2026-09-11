@@ -1,17 +1,22 @@
 // src/features/todos/hooks/useJoinList.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { joinListByCode } from "../api/shareService";
-import { useAuth } from "../../../context/AuthContext";
+import { supabase } from "../../../config/supabase/supabaseClient";
 
 export const useJoinList = () => {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (code: string) => joinListByCode(code),
+    mutationFn: async (inviteCode: string) => {
+      const { data, error } = await supabase.rpc("join_list_by_code", {
+        p_code: inviteCode.trim().toUpperCase(),
+      });
+
+      if (error) throw new Error(error.message);
+      return data; // Devuelve { status, list_id, message }
+    },
     onSuccess: () => {
-      // Sincroniza las listas para que aparezca la nueva lista en "Compartidas conmigo"
-      queryClient.invalidateQueries({ queryKey: ["lists", user?.id] });
+      // Fuerza a TanStack Query a obtener las listas actualizadas
+      queryClient.invalidateQueries({ queryKey: ["lists"] });
     },
   });
 };
