@@ -53,7 +53,7 @@ export const CreateOrJoinList = () => {
     <div className="flex flex-col items-center mb-8 w-full">
       {/* Botones de Selección */}
       <div className="w-full flex text-[1rem] gap-2 mb-2 bg-gray-950 p-2 rounded-lg border border-gray-800 text-sm">
-        <p
+        <button
           onClick={() => handleSelectOption("create")}
           className={`w-full flex justify-center items-center gap-3 px-2 py-4 rounded-md transition-all duration-200 ${
             actionType === "create"
@@ -61,13 +61,13 @@ export const CreateOrJoinList = () => {
               : "bg-gray-700 text-gray-200 hover:text-white"
           }`}
         >
-          <button>
+          <span>
             <TbEdit className="w-6 h-6 text-gray-100" />
-          </button>
-          <span className="text-center">Crear Lista</span>
-        </p>
+          </span>
+          <p className="text-center">Crear Lista</p>
+        </button>
 
-         <p
+         <button
           onClick={() => handleSelectOption("join")}
           className={`w-full flex justify-center items-center gap-3 px-1 py-4 rounded-md transition-all duration-200 ${
             actionType === "join"
@@ -75,11 +75,11 @@ export const CreateOrJoinList = () => {
               : "bg-gray-700 text-gray-200 hover:text-white"
           }`}
         >
-          <span className="text-center">Unirse a Lista</span>
-          <button>
-            <TbPlugConnected   className="w-6 h-6 text-gray-100" />
-          </button>
-        </p>
+          <p className="text-center">Unirse a Lista</p>
+          <span>
+            <TbPlugConnected className="w-6 h-6 text-gray-100" />
+          </span>
+        </button>
       </div>
 
       {/* Entrada con Animación de Despliegue */}

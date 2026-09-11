@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTodos } from "../features/todos/hooks/useTodos";
 import { useLists } from "../features/todos/hooks/useLists";
 import {
@@ -12,7 +12,6 @@ import { FaRegTrashAlt, FaUsers } from "react-icons/fa";
 import { TbSquareCheckFilled } from "react-icons/tb";
 import { ShareListModal } from "../features/todos/components/ShareListModal";
 import { motion } from "framer-motion";
-import Loader from "../components/ui/loader/Loader";
 import LogUser from "../components/layout/userMenu/LogUser";
 import { MembersInList } from "../features/todos/components/Table.MembersInList";
 import { containerVariants, itemVariants } from "../utils/motionVariants";
@@ -25,7 +24,6 @@ export const ToDo = () => {
   const { lists } = useLists();
   const {
     todos,
-    isLoading,
     memberRole,
     addMutation,
     pendingMutation,
@@ -33,7 +31,8 @@ export const ToDo = () => {
     deleteMutation,
   } = useTodos(listId || null);
 
-  const [newTaskText, setNewTaskText] = useState("");
+  const taskRef = useRef<HTMLInputElement | null>(null);
+  const [newTaskText, setNewTaskText] = useState<string>("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
   const currentList = lists.find((item) => item.id === listId);
@@ -51,7 +50,12 @@ export const ToDo = () => {
   const isOwner = currentList?.owner_id === user?.id;
   const isEditor = isOwner || memberRole === "write";
   const handleAddTask = () => {
-    if (newTaskText.length > 29 || !newTaskText.trim() || !listId || !user)
+    if (
+      taskRef.current!.value.length > 29 ||
+      !taskRef.current!.value.trim() ||
+      !listId ||
+      !user
+    )
       return;
     addMutation.mutate({
       list_id: listId,
@@ -82,11 +86,10 @@ export const ToDo = () => {
         break;
     }
   };
-  if (isLoading) return <Loader />;
 
   return (
     <>
-      <section className="pt-6 flex flex-col relative">
+      <section className="pt-6 flex flex-col">
         <Link
           className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80"
           to={"/dashboard"}
@@ -119,8 +122,9 @@ export const ToDo = () => {
           <input
             className="outline-none text-xl p-2"
             autoFocus
+            ref={taskRef}
             value={newTaskText}
-            onChange={(e) => setNewTaskText(e.target.value)}
+            onChange={() => setNewTaskText(taskRef.current!.value)}
             onKeyDown={(e) => (e.key === "Enter" ? handleAddTask() : null)}
             maxLength={30}
             placeholder="Añadir tarea..."
@@ -142,6 +146,7 @@ export const ToDo = () => {
           initial="hidden"
           animate="visible"
         >
+          {/*  {isLoading && <Loader classContainer="absolute mx-[35%] top-[25%]"/>} TODO!! Algo mas suave en la interfaz*/}
           {sortedTodos.map((todo) => (
             <motion.div
               variants={itemVariants}

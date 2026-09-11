@@ -19,6 +19,7 @@ export const LoginForm = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [typePass, setTypePass] = useState("password");
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setErrorMessage(null);
@@ -156,13 +157,16 @@ export const LoginForm = ({
                 ? "Enviar enlace"
                 : "Iniciar sesión"}
         </button>
-
-        <p className="mt-6 text-sm text-gray-400 text-center">
-          No tienes una cuenta?{" "}
-          <Link to="/register" className="text-blue-400 hover:underline">
-            Registrate
+        <div className="flex flex-col gap-4">
+          <Link to="/register" className=" flex gap-2 mt-6 text-sm text-gray-400">
+            ¿No tienes una cuenta?{" "}
+            <p className="text-blue-400 hover:underline">Registrate</p>
           </Link>
-        </p>
+          <Link to="/forgot-password" className=" flex gap-2  text-sm text-gray-400">
+            ¿Olvidaste tu contraseña?{" "}
+            <p className="text-blue-400 hover:underline">Recuperala</p>
+          </Link>
+        </div>
       </form>
     </section>
   );
