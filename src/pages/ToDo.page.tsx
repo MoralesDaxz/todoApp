@@ -30,7 +30,7 @@ export const ToDo = () => {
     confirmMutation,
     deleteMutation,
   } = useTodos(listId || null);
-
+  /* sino es miembro indicar que ya no pertenece a listado y habilitar boton para retornar a Dashboard */
   const taskRef = useRef<HTMLInputElement | null>(null);
   const [newTaskText, setNewTaskText] = useState<string>("");
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -49,19 +49,22 @@ export const ToDo = () => {
   );
   const isOwner = currentList?.owner_id === user?.id;
   const isEditor = isOwner || memberRole === "write";
-  const handleAddTask = () => {
-    if (
-      taskRef.current!.value.length > 29 ||
-      !taskRef.current!.value.trim() ||
-      !listId ||
-      !user
-    )
+  const handleAddTask = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    const textValue = taskRef.current?.value.trim() || "";
+
+    // Si está vacío, excede caracteres o faltan datos de sesión, cancela la acción
+    if (!textValue || textValue.length > 29 || !listId || !user) {
       return;
+    }
+
     addMutation.mutate({
       list_id: listId,
       task: newTaskText,
       created_by: user.id,
     });
+
     setNewTaskText("");
   };
 
@@ -118,18 +121,19 @@ export const ToDo = () => {
         )}
 
         <h1 className="text-center text-4xl my-8 font-medium">{listName}</h1>
-        <form className="self-center items-center flex gap-1 bg-gray-900 border border-gray-500 rounded-md p-2">
+        <form
+          onSubmit={handleAddTask}
+          className="self-center items-center flex gap-1 bg-gray-900 border border-gray-500 rounded-md p-2"
+        >
           <input
             className="outline-none text-xl p-2"
             autoFocus
             ref={taskRef}
             value={newTaskText}
             onChange={() => setNewTaskText(taskRef.current!.value)}
-            onKeyDown={(e) => (e.key === "Enter" ? handleAddTask() : null)}
             maxLength={30}
             placeholder="Añadir tarea..."
           />
-
           <FaSquarePlus
             className="w-11 h-11 cursor-pointer"
             color="#51a2ff"

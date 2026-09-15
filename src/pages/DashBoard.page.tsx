@@ -15,6 +15,7 @@ export const DashBoard = () => {
   if (isLoading) {
     return <Loader />;
   }
+ 
 
   return (
     <section>

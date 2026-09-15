@@ -16,7 +16,7 @@ export const useJoinList = () => {
     },
     onSuccess: () => {
       // Fuerza a TanStack Query a obtener las listas actualizadas
-      queryClient.invalidateQueries({ queryKey: ["lists"] });
+      void queryClient.invalidateQueries({ queryKey: ["lists"] });
     },
   });
 };

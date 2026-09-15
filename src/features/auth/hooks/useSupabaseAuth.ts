@@ -1,6 +1,7 @@
 // En src/hooks/useSupabaseAuth.ts[cite: 4]
 import { useState, useEffect } from "react";
 import { supabase } from "../../../config/supabase/supabaseClient";
+import { useNavigate } from "react-router";
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NICKNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
 
@@ -13,7 +14,7 @@ export const useSupabaseAuth = () => {
   const [authError] = useState("");
   const [authSuccess] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-
+  const navigate = useNavigate();
   // Manejo del contador de cooldown para Magic Link
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -178,6 +179,7 @@ export const useSupabaseAuth = () => {
       };
     } finally {
       setLoading(false);
+      navigate("/dashboard", { replace: true });
     }
   };
   // Solicitud de envío del correo de recuperación

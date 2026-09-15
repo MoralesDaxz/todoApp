@@ -44,7 +44,7 @@ export const Lists: FC<Prop> = ({ pickList }) => {
         key={pickList ? "myLists" : "sharedLists"} // Reinicia la animación al cambiar de vista
       >
         {listsMap[pickList].length > 0 ? (
-          listsMap[pickList].map((list: ListItem) => {
+          listsMap[pickList].map((list: ListItem, idx) => {
             const isOwner = list.owner_id === user?.id;
             const isDeleting = deletingListId === list.id;
 
@@ -54,6 +54,9 @@ export const Lists: FC<Prop> = ({ pickList }) => {
                   variants={itemVariants}
                   className="relative bg-gray-950 border border-gray-500 rounded-lg flex items-center justify-between shadow-md transition-colors"
                 >
+                  <p className="absolute bottom-1 left-4 text-[.5rem] opacity-80">
+                    {listsMap[pickList].length - idx}
+                  </p>
                   {isOwner ? (
                     <button
                       onClick={() =>
