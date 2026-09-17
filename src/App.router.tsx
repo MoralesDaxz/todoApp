@@ -33,34 +33,36 @@ export const AppRouter = () => {
     return () => subscription.unsubscribe();
   }, [navigate, user]);
   return (
-    <Routes>
-      {/* Rutas Públicas */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="/join/:code" element={<Join />} />
+    <>
+      <Routes>
+        {/* Rutas Públicas */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/join/:code" element={<Join />} />
 
-      {/* Rutas Protegidas */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashBoard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/todo/:listId"
-        element={
-          <ProtectedRoute>
-            <ToDo />
-          </ProtectedRoute>
-        }
-      />
+        {/* Rutas Protegidas */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashBoard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/todo/:listId"
+          element={
+            <ProtectedRoute>
+              <ToDo />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Redirección por defecto */}
-      <Route path="*" element={<DefaultRedirect />} />
-    </Routes>
+        {/* Redirección por defecto */}
+        <Route path="*" element={<DefaultRedirect />} />
+      </Routes>
+    </>
   );
 };

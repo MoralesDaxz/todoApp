@@ -1,19 +1,40 @@
 import { BrowserRouter } from "react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { AuthProvider } from "./context/AuthContext";
 import { AppRouter } from "./App.router";
+import { OfflineBanner } from "./components/ui/offlineBanner/OfflineBanner";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 60 * 24, // 24 horas de retención en caché
+      staleTime: 1000 * 60 * 5, // 5 minutos de datos frescos
+      networkMode: "offlineFirst",
+    },
+  },
+});
 
+// El persistidor asíncrono envuelve localStorage automáticamente
+const persister = createAsyncStoragePersister({
+  storage: window.localStorage,
+});
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppRouter />
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <main className="min-h-dvh max-w-4xl mx-auto px-4 pt-4 flex flex-col">
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
+        <BrowserRouter>
+          <AuthProvider>
+            <AppRouter />
+            <OfflineBanner />
+          </AuthProvider>
+        </BrowserRouter>
+      </PersistQueryClientProvider>
+    </main>
   );
 };
 

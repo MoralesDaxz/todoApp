@@ -9,7 +9,7 @@ export interface Todo {
   task: string;
   status: "pending" | "done_by_user" | "confirmed";
   created_by: string;
-  created_at?: string;
+  created_at: string;
 }
 
 export const useTodos = (listId: string | null) => {
@@ -23,8 +23,8 @@ export const useTodos = (listId: string | null) => {
       const { data, error } = await supabase
         .from("todos")
         .select("*")
-        .eq("list_id", listId);
-
+        .eq("list_id", listId)
+        .order("created_at", { ascending: false }); // false: más recientes primero | true: más antiguas primero
       if (error) throw error;
       return data ?? [];
     },
@@ -36,7 +36,9 @@ export const useTodos = (listId: string | null) => {
     queryKey: ["memberRole", listId],
     queryFn: async () => {
       if (!listId) return null;
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return null;
 
       const { data, error } = await supabase
@@ -56,42 +58,81 @@ export const useTodos = (listId: string | null) => {
   useEffect(() => {
     if (!listId) return;
 
-    // Crea un canal específico aislado por el ID de la lista
+    // Sufijo único para evitar colisiones entre múltiples llamadas a useTodos
+    const channelId = `todos-list-${listId}-${crypto.randomUUID().slice(0, 8)}`;
+
     const channel = supabase
-      .channel(`todos-list-${listId}`)
+      .channel(channelId)
       .on(
         "postgres_changes",
         {
-          event: "*", // Escucha INSERT, UPDATE y DELETE
+          event: "*",
           schema: "public",
           table: "todos",
           filter: `list_id=eq.${listId}`,
         },
         () => {
-          // Sincroniza la caché de TanStack Query para refrescar la UI al instante
           void queryClient.invalidateQueries({ queryKey: ["todos", listId] });
-        }
+        },
       )
       .subscribe();
 
-    // Limpieza: Desconecta el canal al desmontar el componente o cambiar de vista
     return () => {
       void supabase.removeChannel(channel);
     };
   }, [listId, queryClient]);
 
-  // 4. Mutación: Crear tarea
+  // 4. Mutación: Crear tarea + Persistencia
   const addMutation = useMutation({
-    mutationFn: async (newTodo: { list_id: string; task: string; created_by: string }) => {
+    mutationFn: async (newTodo: {
+      list_id: string;
+      task: string;
+      created_by: string;
+    }) => {
       const { data, error } = await supabase
         .from("todos")
         .insert([newTodo])
-        .select();
+        .select()
+        .single();
+
       if (error) throw error;
-      return data;
+      return data as Todo;
     },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["todos", listId] });
+    onMutate: async (newTodo) => {
+      await queryClient.cancelQueries({ queryKey: ["todos", listId] });
+
+      const previousTodos =
+        queryClient.getQueryData<Todo[]>(["todos", listId]) || [];
+
+      // ID temporal identificable
+      const tempId = `temp-${crypto.randomUUID()}`;
+      const tempTodo: Todo = {
+        id: tempId,
+        list_id: newTodo.list_id,
+        task: newTodo.task,
+        status: "pending",
+        created_by: newTodo.created_by,
+        created_at: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData<Todo[]>(["todos", listId], (old = []) => [
+        ...old,
+        tempTodo,
+      ]);
+
+      // Retornamos tempId en el contexto para poder encontrarlo en onSuccess
+      return { previousTodos, tempId };
+    },
+    onSuccess: (serverTodo, _variables, context) => {
+      // Reemplazamos de forma transparente la tarea temporal con los datos reales de la BD
+      queryClient.setQueryData<Todo[]>(["todos", listId], (old = []) =>
+        old.map((item) => (item.id === context?.tempId ? serverTodo : item)),
+      );
+    },
+    onError: (_err, _newTodo, context) => {
+      if (context?.previousTodos) {
+        queryClient.setQueryData(["todos", listId], context.previousTodos);
+      }
     },
   });
 
@@ -128,10 +169,7 @@ export const useTodos = (listId: string | null) => {
   // 7. Mutación: Eliminar tarea
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("todos")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("todos").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
