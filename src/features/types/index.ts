@@ -23,7 +23,7 @@ export interface Todo {
   task: string;
   status: "pending" | "done_by_user" | "confirmed";
   created_by: string;
-  created_at?: string; 
+  created_at: string |Date; 
 }
 
 export interface TableMember {

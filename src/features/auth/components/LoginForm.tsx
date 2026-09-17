@@ -124,10 +124,10 @@ export const LoginForm = ({
                   required
                   className="w-full p-2 border border-gray-700 rounded-md outline-gray-400 bg-transparent text-white outline-none"
                 />
-                {typePass === "password" ? (
+                {typePass === "text" ? (
                   <FaEye
                     onClick={() =>
-                      setTypePass(typePass === "password" ? "text" : "password")
+                      setTypePass(typePass === "text" ? "password" : "text")
                     }
                     className="absolute top-3 right-1 cursor-pointer"
                   />

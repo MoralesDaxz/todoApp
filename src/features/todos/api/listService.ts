@@ -9,6 +9,17 @@ export const getLists = async (): Promise<ListItem[]> => {
   return data || [];
 };
 
+export const getMyLists = async () => {
+  const { data, error } = await supabase
+    .from("lists")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+
 export const createList = async (name: string, owner_id: string) => {
   const { data, error } = await supabase
     .from("lists")
