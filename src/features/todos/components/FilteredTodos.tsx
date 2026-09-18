@@ -6,6 +6,7 @@ import { containerVariants } from "../../../utils/motionVariants";
 import { Todos } from "./Todos";
 import { IoFilter } from "react-icons/io5";
 import { TbFilter2, TbFilter2Down, TbFilter2X } from "react-icons/tb";
+import { TaskProgressBar } from "./TaskProgressBar";
 
 type FilterStatus = "all" | "pending" | "confirmed" | "mine";
 
@@ -87,7 +88,8 @@ export const FilteredTodos = ({
   const styleButtonFilter = "text-gray-300 w-5 h-5 mx-2";
 
   return (
-    <>
+    <section className="w-[95%] mx-auto mt-4">
+      <TaskProgressBar todos={todos} />
       <AnimatePresence mode="wait">
         {!isActiveFilter.modal ? (
           <motion.button
@@ -99,10 +101,14 @@ export const FilteredTodos = ({
             onClick={() =>
               setIsActiveFilter({ ...isActiveFilter, modal: true })
             }
-            className="flex self-end justify-between bg-gray-900 border border-gray-700 hover:border-blue-500 px-3 py-1.5 rounded-md cursor-pointer w-fit items-center gap-2 mb-2"
+            className="flex justify-end w-full"
           >
-            <p className="text-gray-400 text-xs">Buscar / Filtrar / Ordenar</p>
-            <IoFilter className="text-gray-400 w-4 h-4" />
+            <div className="flex justify-between bg-gray-900 border border-gray-700 hover:border-blue-500 px-3 py-1.5 rounded-md cursor-pointer w-fit gap-2">
+              <p className="text-gray-400 text-xs">
+                Buscar / Filtrar / Ordenar
+              </p>
+              <IoFilter className="text-gray-400 w-4 h-4" />
+            </div>
           </motion.button>
         ) : (
           <motion.div
@@ -112,7 +118,7 @@ export const FilteredTodos = ({
             exit={{ opacity: 0, y: -8, scaleY: 0.95 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             style={{ originY: 0 }}
-            className="flex flex-col gap-2 w-full mx-auto mt-2 overflow-hidden"
+            className="flex flex-col gap-2 w-full mx-auto mt-2 mb-4 overflow-hidden"
           >
             <div className="relative flex justify-between items-center w-full">
               <input
@@ -120,8 +126,8 @@ export const FilteredTodos = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar tarea..."
-                className="w-full rounded-lg px-2 py-4 text-sm text-gray-300 placeholder-gray-400 focus:outline-none bg-gray-900 border border-gray-700 focus:border-blue-500 transition-colors"
+                placeholder="Buscar..."
+                className="w-full rounded-lg px-2 py-4 text-sm text-gray-400 placeholder-gray-400 focus:outline-none bg-gray-900 border border-gray-700 focus:border-blue-500 transition-colors"
               />
 
               <button
@@ -171,9 +177,8 @@ export const FilteredTodos = ({
         )}
       </AnimatePresence>
 
-      <motion.ul
+      <motion.section
         variants={containerVariants}
-        className="mt-4"
         initial="hidden"
         animate="visible"
       >
@@ -184,7 +189,7 @@ export const FilteredTodos = ({
         ) : (
           <Todos todos={filteredTodos} isEditor={isEditor} />
         )}
-      </motion.ul>
-    </>
+      </motion.section>
+    </section>
   );
 };

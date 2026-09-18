@@ -34,7 +34,7 @@ export const OptionsLogUser = ({
       <IoClose
       title="Cerrar"
         onClick={() => setIsActiveModalOptions(false)}
-        className="absolute top-1 right-1 text-2xl text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
+        className="absolute top-1 right-1 w-7 h-7 text-gray-300 opacity-90 rounded-full bg-gray-900 p-1 cursor-pointer"
       />
 
       <div className=" text-[1rem] mt-2 flex flex-col items-end gap-2 px-1 py-5 rounded-sm">

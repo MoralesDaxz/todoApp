@@ -55,7 +55,7 @@ export const Todos = ({ todos, isEditor }: Props) => {
           <motion.div
             variants={itemVariants}
             key={todo.id}
-            className={`w-[90%] mx-auto my-3 flex justify-between items-stretch gap-2 bg-gray-950 rounded-md border ${
+            className={`mb-4 flex justify-between items-stretch gap-2 bg-gray-950 rounded-md border ${
               borderColors[todo.status]
             }`}
           >
@@ -84,7 +84,7 @@ export const Todos = ({ todos, isEditor }: Props) => {
                 )}
               </div>
               <span className="flex justify-end w-full">
-                <p className="text-[10px] mr-1">
+                <p className="text-[11px] mr-1">
                   {formatRelativeTime(todo.created_at)}
                 </p>
               </span>

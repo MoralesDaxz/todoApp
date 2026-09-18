@@ -13,7 +13,7 @@ interface Props {
   listToDelete: { id: string; name: string } | null;
   setListToDelete: Dispatch<SetStateAction<list | null>>;
 }
-export const ModalDeleteList: FC<Props> = ({
+export const ModalQuestionDeleteList: FC<Props> = ({
   listToDelete,
   setListToDelete,
 }) => {

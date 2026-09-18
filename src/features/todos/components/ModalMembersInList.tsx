@@ -5,7 +5,7 @@ import { useRemoveMember } from "../hooks/useRemoveMember";
 import type { TableMember, TableProps } from "../../types";
 
 
-export const MembersInList = ({
+export const ModalMembersInList = ({
   listOwner,
   listName,
   listId,

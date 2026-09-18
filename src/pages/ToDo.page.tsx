@@ -8,7 +8,7 @@ import { FiShare2 } from "react-icons/fi";
 import { FaUsers } from "react-icons/fa";
 import { ShareListModal } from "../features/todos/components/ShareListModal";
 import LogUser from "../components/layout/userMenu/LogUser";
-import { MembersInList } from "../features/todos/components/Table.MembersInList";
+import { ModalMembersInList } from "../features/todos/components/ModalMembersInList";
 import { ErrorMessage } from "../components/ui/errorMessage/ErrorMessage";
 import { FilteredTodos } from "../features/todos/components/FilteredTodos";
 
@@ -87,16 +87,16 @@ export const ToDo = () => {
 
         <div className="w-full relative">
           <input
-            className="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 transition-colors rounded-md py-3 px-2"
+            className="w-full bg-gray-900 border placeholder:text-gray-400  border-gray-700 focus:border-blue-500 transition-colors rounded-md py-4 px-2"
             autoFocus
             ref={taskRef}
             value={newTaskText}
             onKeyDown={(e) => e.key === "Enter" && handleAddTask(e)}
             onChange={() => setNewTaskText(taskRef.current!.value)}
             maxLength={30}
-            placeholder="Añadir tarea..."
+            placeholder="Añadir o Crear..."
           />
-          {newTaskText.length > 0 && (
+          {newTaskText.length > 3 && (
             <button
               onClick={(e) => handleAddTask(e)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white text-xs font-medium "
@@ -131,7 +131,7 @@ export const ToDo = () => {
           )}
 
           {isMembersModalOpen && currentList && (
-            <MembersInList
+            <ModalMembersInList
               listOwner={currentList.owner_nickname}
               listName={currentList.name}
               listId={currentList.id}

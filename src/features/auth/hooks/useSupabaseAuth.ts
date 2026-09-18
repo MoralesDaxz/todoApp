@@ -9,12 +9,13 @@ export const useSupabaseAuth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
-  const [password, setPassword] = useState(""); // <-- Nuevo estado para password
+  const [password, setPassword] = useState("");
   const [claims, setClaims] = useState<unknown>(null);
   const [authError] = useState("");
   const [authSuccess] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const navigate = useNavigate();
+
   // Manejo del contador de cooldown para Magic Link
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -29,8 +30,6 @@ export const useSupabaseAuth = () => {
     event.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
     const cleanNickname = nickname.trim();
-
-    // Validaciones
     if (!cleanNickname || !NICKNAME_REGEX.test(cleanNickname)) {
       return {
         success: false,
@@ -57,14 +56,13 @@ export const useSupabaseAuth = () => {
         password,
         options: {
           data: {
-            nickname: cleanNickname, // Guardamos el nickname en los metadatos de Supabase
+            nickname: cleanNickname,
           },
           emailRedirectTo: window.location.origin,
         },
       });
 
       if (error) {
-        // 🔍 Verificamos si el error viene de la restricción única del nickname
         if (
           error.message.includes("profiles_nickname_key") ||
           error.message.includes("duplicate key value")
