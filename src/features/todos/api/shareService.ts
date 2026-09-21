@@ -33,7 +33,7 @@ export const joinListByCode = async (code: string): Promise<string> => {
   });
 
   if (error) throw new Error(error.message);
-  return data as string; // Retorna el list_id de la lista unida
+  return data as string; 
 };
 
 export const removeMemberFromList = async (

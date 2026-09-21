@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../config/supabase/supabaseClient";
 import { useNavigate } from "react-router";
+import { sleep } from "../../../utils/sleep";
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NICKNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
 
@@ -9,12 +10,13 @@ export const useSupabaseAuth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
-  const [password, setPassword] = useState(""); // <-- Nuevo estado para password
+  const [password, setPassword] = useState("");
   const [claims, setClaims] = useState<unknown>(null);
   const [authError] = useState("");
   const [authSuccess] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const navigate = useNavigate();
+
   // Manejo del contador de cooldown para Magic Link
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -29,8 +31,6 @@ export const useSupabaseAuth = () => {
     event.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
     const cleanNickname = nickname.trim();
-
-    // Validaciones
     if (!cleanNickname || !NICKNAME_REGEX.test(cleanNickname)) {
       return {
         success: false,
@@ -57,14 +57,13 @@ export const useSupabaseAuth = () => {
         password,
         options: {
           data: {
-            nickname: cleanNickname, // Guardamos el nickname en los metadatos de Supabase
+            nickname: cleanNickname,
           },
           emailRedirectTo: window.location.origin,
         },
       });
 
       if (error) {
-        // 🔍 Verificamos si el error viene de la restricción única del nickname
         if (
           error.message.includes("profiles_nickname_key") ||
           error.message.includes("duplicate key value")
@@ -168,9 +167,15 @@ export const useSupabaseAuth = () => {
       });
 
       if (error) {
-        return { success: false, error: error.message };
-      }
+        const customError =
+          error.message === "Invalid login credentials"
+            ? "Correo o contraseña incorrectos."
+            : error.message;
 
+        return { success: false, error: customError };
+      }
+      await sleep(2000)
+      navigate("/dashboard", { replace: true });
       return { success: true };
     } catch (err) {
       return {
@@ -179,7 +184,6 @@ export const useSupabaseAuth = () => {
       };
     } finally {
       setLoading(false);
-      navigate("/dashboard", { replace: true });
     }
   };
   // Solicitud de envío del correo de recuperación

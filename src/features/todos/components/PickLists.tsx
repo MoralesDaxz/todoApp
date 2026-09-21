@@ -10,10 +10,6 @@ interface Props {
 export const PickLists = ({ setPickList, pickList }: Props) => {
   const stylePickList =
     "w-full relative rounded-md text-[1rem] py-4 px-1 transition-colors duration-300 ease-in cursor-pointer text-gray-300 hover:text-white hover:font-medium outline-none flex items-center justify-center gap-3";
-
-
- 
-
   return (
     <>
       <div className="bg-gray-950  gap-2 rounded-md  my-2 flex text-center p-2">

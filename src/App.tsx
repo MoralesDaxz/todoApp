@@ -5,6 +5,7 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { AuthProvider } from "./context/AuthContext";
 import { AppRouter } from "./App.router";
 import { OfflineBanner } from "./components/ui/offlineBanner/OfflineBanner";
+import { Toaster } from "./components/ui/chadCn/sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +31,7 @@ const App = () => {
         <BrowserRouter>
           <AuthProvider>
             <AppRouter />
+            <Toaster richColors position="bottom-right" />
             <OfflineBanner />
           </AuthProvider>
         </BrowserRouter>

@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, type Dispatch, type FC, type SetStateAction } from "react";
 import { HiExclamationTriangle } from "react-icons/hi2";
+import { ErrorMessage } from "../../../../src/components/ui/errorMessage/ErrorMessage";
 import { useLists } from "../hooks/useLists";
-import { ErrorMessage } from "../../../components/ui/errorMessage/ErrorMessage";
-
+import { toast } from "sonner";
 
 interface list {
   id: string;
@@ -13,7 +13,7 @@ interface Props {
   listToDelete: { id: string; name: string } | null;
   setListToDelete: Dispatch<SetStateAction<list | null>>;
 }
-export const ModalDeleteList: FC<Props> = ({
+export const ModalQuestionDeleteList: FC<Props> = ({
   listToDelete,
   setListToDelete,
 }) => {
@@ -29,6 +29,11 @@ export const ModalDeleteList: FC<Props> = ({
     if (!result.success) {
       setErrorMessage(result.error || "No se pudo eliminar la lista.");
     }
+
+    toast.error(listToDelete.name, {
+      duration: 2000,
+      description: `Lista eliminada.`,
+    });
 
     setListToDelete(null);
   };

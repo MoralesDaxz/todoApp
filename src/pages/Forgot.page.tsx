@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useSupabaseAuth } from "../features/auth/hooks/useSupabaseAuth";
 import { ErrorMessage } from "../components/ui/errorMessage/ErrorMessage";
 
+
 export const ForgotPage = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);

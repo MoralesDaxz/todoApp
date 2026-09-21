@@ -2,6 +2,9 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router";
 import type { LoginFormProps } from "../../types";
+import { StepLoader } from "../../../components/ui/loader/StepLoader";
+
+const LOGIN_STEPS = ["Validando credenciales...", "Preparando tu espacio..."];
 
 export const LoginForm = ({
   email,
@@ -35,139 +38,156 @@ export const LoginForm = ({
     } else {
       const result = await handlePasswordLogin(event);
       if (!result.success) {
-        setErrorMessage(result.error || "Credenciales incorrectas.");
+        return setErrorMessage(result.error || "Credenciales incorrectas.");
       }
     }
   };
 
   return (
-    <section className="pt-20 max-w-4xl">
-      <h1 className="font-bold text-4xl text-center">Iniciar Sesión</h1>
+    <>
+      {loading && (
+        <div className="min-h-dvh flex items-center justify-center bg-gray-950 text-white">
+          <StepLoader steps={LOGIN_STEPS} intervalMs={350} />
+        </div>
+      )}
+      <section className="pt-20 max-w-4xl">
+        <h1 className="font-bold text-4xl text-center">Iniciar Sesión</h1>
 
-      <div className="flex justify-between self-center gap-3 mt-6 bg-gray-900 p-1 rounded-md border border-gray-700">
-        <button
-          type="button"
-          onClick={() => {
-            setLoginMethod("password");
-            setErrorMessage(null);
-            setSuccessMessage(null);
-          }}
-          className={`w-full py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer ${
-            loginMethod === "password"
-              ? "bg-blue-400 hover:bg-blue-500 text-white"
-              : "text-gray-400 hover:text-white"
-          }`}
+        <div className="flex justify-between self-center gap-3 mt-6 bg-gray-900 p-1 rounded-md border border-gray-700">
+          <button
+            type="button"
+            onClick={() => {
+              setLoginMethod("password");
+              setErrorMessage(null);
+              setSuccessMessage(null);
+            }}
+            className={`w-full py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer ${
+              loginMethod === "password"
+                ? "bg-blue-400 hover:bg-blue-500 text-white"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setLoginMethod("magic");
+              setErrorMessage(null);
+              setSuccessMessage(null);
+            }}
+            className={`w-full py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer  ${
+              loginMethod === "magic"
+                ? "bg-blue-400 hover:bg-blue-500 text-white"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Enlace al correo
+          </button>
+        </div>
+
+        <form
+          onSubmit={onSubmit}
+          className="flex flex-col gap-4  mx-auto mt-6 w-full"
         >
-          Login
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setLoginMethod("magic");
-            setErrorMessage(null);
-            setSuccessMessage(null);
-          }}
-          className={`w-full py-2 px-4 rounded text-sm font-medium transition-colors cursor-pointer  ${
-            loginMethod === "magic"
-              ? "bg-blue-400 hover:bg-blue-500 text-white"
-              : "text-gray-400 hover:text-white"
-          }`}
-        >
-          Enlace al correo
-        </button>
-      </div>
-
-      <form
-        onSubmit={onSubmit}
-        className="flex flex-col gap-4  mx-auto mt-6 w-full"
-      >
-        {errorMessage && (
-          <div className="bg-red-950/70 border border-red-800 text-red-300 text-sm p-3 rounded-md text-center">
-            {errorMessage}
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="bg-green-950/70 border border-green-800 text-green-300 text-sm p-3 rounded-md text-center">
-            {successMessage}
-          </div>
-        )}
-
-        <article className="border border-gray-600 bg-gray-950 w-full rounded-md p-4">
-          <div>
-            <label className="block text-md font-medium mb-1">
-              Correo Electrónico
-            </label>
-            <input
-              autoFocus
-              type="email"
-              maxLength={70}
-              placeholder="usuario@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full p-2 border border-gray-700 rounded-md outline-gray-400 bg-transparent text-white outline-none"
-            />
-          </div>
-
-          {loginMethod === "password" && (
-            <div className="mt-4">
-              <label className="block text-md font-medium mb-1">
-                Contraseña
-              </label>
-              <div className="relative">
-                <input
-                  type={typePass}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full p-2 border border-gray-700 rounded-md outline-gray-400 bg-transparent text-white outline-none"
-                />
-                {typePass === "text" ? (
-                  <FaEye
-                    onClick={() =>
-                      setTypePass(typePass === "text" ? "password" : "text")
-                    }
-                    className="absolute top-3 right-1 cursor-pointer"
-                  />
-                ) : (
-                  <FaEyeSlash
-                    onClick={() =>
-                      setTypePass(typePass === "password" ? "text" : "password")
-                    }
-                    className="absolute top-3 right-1 cursor-pointer"
-                  />
-                )}
-              </div>
+          {errorMessage && (
+            <div className="bg-red-950/70 border border-red-800 text-red-300 text-sm p-3 rounded-md text-center">
+              {errorMessage}
             </div>
           )}
-        </article>
 
-        <button
-          type="submit"
-          disabled={loading || (loginMethod === "magic" && cooldown > 0)}
-          className="w-fit self-center bg-blue-400 text-white p-2.5 rounded-md font-medium hover:bg-blue-500 disabled:opacity-50 shadow-2xl transition-all cursor-pointer disabled:cursor-not-allowed"
-        >
-          {loading
-            ? "Procesando..."
-            : loginMethod === "magic" && cooldown > 0
-              ? `Reintentar en ${cooldown}s`
-              : loginMethod === "magic"
-                ? "Enviar enlace"
-                : "Iniciar sesión"}
-        </button>
-        <div className="flex flex-col gap-4">
-          <Link to="/register" className=" flex gap-2 mt-6 text-sm text-gray-400">
-            ¿No tienes una cuenta?{" "}
-            <p className="text-blue-400 hover:underline">Registrate</p>
-          </Link>
-          <Link to="/forgot-password" className=" flex gap-2  text-sm text-gray-400">
-            ¿Olvidaste tu contraseña?{" "}
-            <p className="text-blue-400 hover:underline">Recuperala</p>
-          </Link>
-        </div>
-      </form>
-    </section>
+          {successMessage && (
+            <div className="bg-green-950/70 border border-green-800 text-green-300 text-sm p-3 rounded-md text-center">
+              {successMessage}
+            </div>
+          )}
+
+          <article className="border border-gray-600 bg-gray-950 w-full rounded-md p-4">
+            <div>
+              <label className="block text-md font-medium mb-1">
+                Correo Electrónico
+              </label>
+              <input
+                autoFocus
+                name="email"
+                type="email"
+                autoComplete="email"
+                maxLength={70}
+                placeholder="usuario@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full p-2 border border-gray-700 rounded-md outline-gray-400 bg-transparent text-white outline-none"
+              />
+            </div>
+
+            {loginMethod === "password" && (
+              <div className="mt-4">
+                <label className="block text-md font-medium mb-1">
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <input
+                    type={typePass}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full p-2 border border-gray-700 rounded-md outline-gray-400 bg-transparent text-white outline-none"
+                  />
+                  {typePass === "text" ? (
+                    <FaEye
+                      onClick={() =>
+                        setTypePass(typePass === "text" ? "password" : "text")
+                      }
+                      className="absolute top-3 right-1 cursor-pointer"
+                    />
+                  ) : (
+                    <FaEyeSlash
+                      onClick={() =>
+                        setTypePass(
+                          typePass === "password" ? "text" : "password",
+                        )
+                      }
+                      className="absolute top-3 right-1 cursor-pointer"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </article>
+
+          <button
+            type="submit"
+            disabled={loading || (loginMethod === "magic" && cooldown > 0)}
+            className="w-fit self-center bg-blue-400 text-white p-2.5 rounded-md font-medium hover:bg-blue-500 disabled:opacity-50 shadow-2xl transition-all cursor-pointer disabled:cursor-not-allowed"
+          >
+            {loading
+              ? "Procesando..."
+              : loginMethod === "magic" && cooldown > 0
+                ? `Reintentar en ${cooldown}s`
+                : loginMethod === "magic"
+                  ? "Enviar enlace"
+                  : "Iniciar sesión"}
+          </button>
+          <div className="flex flex-col gap-4">
+            <Link
+              to="/register"
+              className=" flex gap-2 mt-6 text-sm text-gray-400"
+            >
+              ¿No tienes una cuenta?{" "}
+              <p className="text-blue-400 hover:underline">Registrate</p>
+            </Link>
+            <Link
+              to="/forgot-password"
+              className=" flex gap-2  text-sm text-gray-400"
+            >
+              ¿Olvidaste tu contraseña?{" "}
+              <p className="text-blue-400 hover:underline">Recuperala</p>
+            </Link>
+          </div>
+        </form>
+      </section>
+    </>
   );
 };

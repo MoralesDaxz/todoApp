@@ -34,7 +34,7 @@
                 ├── Dinamic.PickLists.tsx
                 ├── Lists.tsx
                 ├── ModalDeleteList.tsx
-                ├── Table.MembersInList.tsx
+                ├── ModalMembersInList.tsx
             └── 📁todos
                 └── 📁api
                     ├── listService.ts

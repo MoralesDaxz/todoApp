@@ -21,14 +21,14 @@ export const FilteredLists = () => {
   };
   return (
     <AnimatePresence>
-      <div className="flex flex-col mt-4">
+      <div className="flex flex-col mt-4 ">
         <div className="self-end flex justify-between items-center">
           <button
             onClick={() => {
               setIsOpenFilter(!isOpenFilter);
               setSearchQuery("");
             }}
-            className="flex items-center gap-2 bg-gray-900 border border-gray-600 hover:border-blue-500 px-3 py-1.5 rounded-md text-xs text-gray-300 cursor-pointer transition-colors"
+            className="flex items-center gap-2 bg-gray-900 border border-gray-700  text-gray-300  hover:border-blue-500 px-3 py-1.5 rounded-md text-xs cursor-pointer transition-colors"
           >
             <span>{isOpenFilter ? "Ocultar filtros" : "Buscar"}</span>
             <IoFilter className="w-4 h-4 text-gray-400" />
@@ -42,7 +42,7 @@ export const FilteredLists = () => {
             exit={{ opacity: 0, y: -8, scaleY: 0.95 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             style={{ originY: 0 }}
-            className="flex flex-col justify-center w-full bg-gray-900 p-3 rounded-lg border border-gray-600 mb-4"
+            className="flex flex-col justify-center w-full bg-gray-900 p-3 rounded-lg border border-gray-600 "
           >
             <div className="relative flex items-center">
               <input
@@ -106,7 +106,7 @@ export const FilteredLists = () => {
                             </p>
                           </span>
                           <p className="text-gray-400 text-xs">
-                            {formatRelativeTime(currentList!.created_at)}
+                            {currentList &&  formatRelativeTime(currentList.created_at)}
                           </p>
                         </div>
                         <div className="p-2">
