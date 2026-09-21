@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useLists } from "../hooks/useLists";
 import { useJoinList } from "../hooks/useJoinList";
-import { ErrorMessage } from "../../../components/ui/errorMessage/ErrorMessage";
 import { AnimatePresence, motion } from "framer-motion";
 import { TbEdit, TbPlugConnected } from "react-icons/tb";
+import { ErrorMessage } from "../../../../src/components/ui/errorMessage/ErrorMessage";
+
 
 
 export const CreateOrJoinList = () => {

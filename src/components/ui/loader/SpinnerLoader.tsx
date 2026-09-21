@@ -2,7 +2,7 @@ import { TbLoader } from "react-icons/tb";
 interface Props {
   classContainer?: string
 }
-const Loader = ({classContainer}:Props) => {
+export const SpinnerLoader = ({classContainer}:Props) => {
   return (
     <div className={`flex flex-col items-center mt-[20%] text-lg gap-2 ${classContainer}`}>
       <p className="text-gray-300 font-medium">Cargando...</p>
@@ -11,4 +11,4 @@ const Loader = ({classContainer}:Props) => {
   );
 };
 
-export default Loader;
+

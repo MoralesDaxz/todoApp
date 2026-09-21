@@ -19,11 +19,11 @@ export const MiniListTasksProgressBar = ({ listId }: Props) => {
             <span>
               {completed}/{total} completadas
             </span>
-            <span>{percentage}%</span>
+            <span className=" text-sx font-bold ">{percentage}%</span>
           </div>
           <div className="w-full bg-gray-900 h-1.5 rounded-full overflow-hidden border border-gray-800">
             <div
-              className="bg-blue-500 h-full rounded-full transition-all duration-300"
+              className="bg-linear-to-r from-blue-600 to-green-500  h-full rounded-full transition-all duration-300"
               style={{ width: `${percentage}%` }}
             />
           </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useSupabaseAuth } from "../features/auth/hooks/useSupabaseAuth";
-import { ErrorMessage } from "../components/ui/errorMessage/ErrorMessage";
+import { ErrorMessage } from "../../src/components/ui/errorMessage/ErrorMessage";
 
 export const ResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState("");

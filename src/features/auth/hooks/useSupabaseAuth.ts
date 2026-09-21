@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../config/supabase/supabaseClient";
 import { useNavigate } from "react-router";
+import { sleep } from "../../../utils/sleep";
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NICKNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
 
@@ -166,9 +167,15 @@ export const useSupabaseAuth = () => {
       });
 
       if (error) {
-        return { success: false, error: error.message };
-      }
+        const customError =
+          error.message === "Invalid login credentials"
+            ? "Correo o contraseña incorrectos."
+            : error.message;
 
+        return { success: false, error: customError };
+      }
+      await sleep(2000)
+      navigate("/dashboard", { replace: true });
       return { success: true };
     } catch (err) {
       return {
@@ -177,7 +184,6 @@ export const useSupabaseAuth = () => {
       };
     } finally {
       setLoading(false);
-      navigate("/dashboard", { replace: true });
     }
   };
   // Solicitud de envío del correo de recuperación

@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useJoinList } from "../features/todos/hooks/useJoinList";
-import Loader from "../components/ui/loader/Loader";
-import { AnimatePresence, motion } from "framer-motion";
-const STEPS = ["Verificando enlace...", "Uniendote a la lista..."];
+import { useNavigate, useParams } from "react-router";
+import { StepLoader } from "../components/ui/loader/StepLoader";
+
+const JOIN_STEPS = ["Verificando enlace...", "Uniéndote a la lista..."];
+
 export const Join = () => {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const joinMutation = useJoinList();
   const { user, loading } = useAuth();
-
-  const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const hasExecutedRef = useRef(false);
 
@@ -28,28 +27,20 @@ export const Join = () => {
       if (!code || hasExecutedRef.current) return;
       hasExecutedRef.current = true;
 
-      const interval = setInterval(() => {
-        setCurrentStep((prev) => {
-          if (prev < STEPS.length - 1) return prev + 1;
-          clearInterval(interval);
-          return prev;
-        });
-      }, 400);
-
       try {
         const res = await joinMutation.mutateAsync(code);
         sessionStorage.removeItem("pendingJoinCode");
 
         setTimeout(() => {
           navigate(`/todo/${res.list_id}`, { replace: true });
-        }, 1600);
+        }, 1200);
 
         if (!res?.list_id) {
           throw new Error("No se recibió el ID de la lista desde el servidor.");
         }
       } catch (err: unknown) {
         if (err instanceof Error) {
-          setError(err.message); // TS reconoce 'err.message' automáticamente
+          setError(err.message);
         }
       }
     };
@@ -75,39 +66,7 @@ export const Join = () => {
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-gray-950 text-white p-4">
-      <Loader />
-
-      {/* Contenedor estático para evitar desplazamientos de diseño */}
-      <div className="mt-6 h-8 flex items-center justify-center relative overflow-hidden w-64">
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={currentStep}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="text-sm font-medium text-gray-300 absolute"
-          >
-            {STEPS[currentStep]}
-          </motion.p>
-        </AnimatePresence>
-      </div>
-
-      {/* Indicador de progreso con puntos */}
-      <div className="flex gap-2 mt-2">
-        {STEPS.map((_, index) => (
-          <motion.div
-            key={index}
-            className={`h-1.5 rounded-full ${
-              index <= currentStep ? "bg-blue-500" : "bg-gray-800"
-            }`}
-            animate={{
-              width: index === currentStep ? 20 : 6,
-            }}
-            transition={{ duration: 0.3 }}
-          />
-        ))}
-      </div>
+      <StepLoader steps={JOIN_STEPS} intervalMs={400} />
     </div>
   );
 };

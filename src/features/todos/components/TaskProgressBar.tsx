@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import type { Todo } from "../../types";
 
+
 interface Props {
   todos: Todo[];
 }
@@ -31,12 +32,13 @@ export const TaskProgressBar = ({ todos }: Props) => {
             {completed} de {total}{" "}
             {total === 1 ? "tarea completada" : "tareas completadas"}
           </span>
+
           <span className="text-blue-400 font-bold">{percentage}%</span>
         </>
         {percentage === 100 && (
           <>
             <span className="text-green-400 font-semibold animate-pulse">
-              ¡Lista completada! 🎉
+              ¡Lista completada!
             </span>
             <span className="text-blue-400 font-bold">{percentage}%</span>
           </>

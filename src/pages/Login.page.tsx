@@ -3,8 +3,7 @@ import { useSupabaseAuth } from "../features/auth/hooks/useSupabaseAuth";
 import { LoginForm } from "../features/auth/components/LoginForm";
 
 const Login = () => {
-/*   const navigate = useNavigate();
-  const { user } = useAuth(); */
+
   const {
     loading,
     email,

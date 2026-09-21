@@ -12,17 +12,17 @@ import { HiTrash, HiUsers } from "react-icons/hi2";
 import { Link } from "react-router";
 import { formatRelativeTime } from "../../../utils/date";
 import { FilteredLists } from "./FilteredLists";
-
 import { MiniListTasksProgressBar } from "./MiniListTasksProgressBar";
-import { BackToTopButton } from "../../../components/ui/ToTop.tsx/BackToTopButton";
+import { useScrollThreshold } from "../../../../src/components/hooks/ControlDisplay/useScrollThreshold";
+import { BackToTopButton } from "../../../../src/components/ui/toTopButton/BackToTopButton";
+import { SpinnerLoader } from "../../../components/ui/loader/SpinnerLoader";
 
 interface Prop {
   pickList: "myLists" | "sharedLists";
 }
 export const Lists: FC<Prop> = ({ pickList }) => {
   const { user } = useAuth();
-  const { lists, deletingListId } = useLists();
-
+  const { lists, deletingListId, isLoading } = useLists();
   const [listToDelete, setListToDelete] = useState<{
     id: string;
     name: string;
@@ -30,14 +30,10 @@ export const Lists: FC<Prop> = ({ pickList }) => {
 
   const [selectedListForMembers, setSelectedListForMembers] =
     useState<ListItem | null>(null);
-
-  // El scroll real ocurre dentro de este div (overflow-auto), no en window.
-  // Con un callback ref (en vez de useRef) el estado se actualiza apenas
-  // el nodo se monta, así useScrollThreshold ya tiene target desde el
-  // primer render útil.
   const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
     null,
   );
+  const controlScroll = useScrollThreshold(400, scrollContainer);
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
@@ -45,12 +41,12 @@ export const Lists: FC<Prop> = ({ pickList }) => {
     myLists: sortedLists.filter((list) => list.owner_id === user?.id),
     sharedLists: sortedLists.filter((list) => list.owner_id !== user?.id),
   };
+  if (isLoading) <SpinnerLoader />;
 
   return (
     <>
       <div className="relative mb-4">
         <FilteredLists />
-
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -65,6 +61,7 @@ export const Lists: FC<Prop> = ({ pickList }) => {
             ref={setScrollContainer}
             className="z-20 grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-3 max-h-dvh overflow-auto scrollbar-thin  scrollbar-thumb-gray-500 "
           >
+            {controlScroll && <BackToTopButton className="" />}
             {listsMap[pickList].length > 0 ? (
               listsMap[pickList].map((list: ListItem) => {
                 const isOwner = list.owner_id === user?.id;

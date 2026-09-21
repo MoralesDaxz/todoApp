@@ -17,17 +17,12 @@ function getScrollTop(target: ScrollTarget): number {
  * scrollTop/scrollY y compara, no toca el DOM ni el árbol de React.
  *
  * @param threshold cuántos px de scroll deben pasar para que sea `true`
- * @param target elemento que realmente scrollea. Si es `null`/omitido,
- *   usa `window` (caso de página completa sin contenedor con overflow).
- *   Si tienes un `<div className="overflow-auto">`, pásale ese elemento
- *   (normalmente vía un ref/state, ver ejemplo).
+ * @param target elemento que realmente scrollea. 
  *
  * @example
- * // Página completa
  * const showBackToTop = useScrollThreshold(400);
  *
  * @example
- * // Contenedor propio con overflow-auto
  * const [container, setContainer] = useState<HTMLDivElement | null>(null);
  * const showBackToTop = useScrollThreshold(400, container);
  * return <div ref={setContainer} className="overflow-auto max-h-dvh">...</div>;
