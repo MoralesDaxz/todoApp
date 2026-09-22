@@ -37,7 +37,7 @@ export const StepLoader = ({
   }, [steps.length, intervalMs, isControlled]);
 
   return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
+    <div className={`z-60 absolute mx-auto w-full min-h-dvh bg-gray-950 text-white flex flex-col items-center justify-center ${className}`}>
       {showSpinner && <SpinnerLoader />}
 
       {/* Texto del paso animado */}

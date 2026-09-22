@@ -45,11 +45,7 @@ export const LoginForm = ({
 
   return (
     <>
-      {loading && (
-        <div className="min-h-dvh flex items-center justify-center bg-gray-950 text-white">
-          <StepLoader steps={LOGIN_STEPS} intervalMs={350} />
-        </div>
-      )}
+      {loading && <StepLoader steps={LOGIN_STEPS} intervalMs={350} />}
       <section className="pt-20 max-w-4xl">
         <h1 className="font-bold text-4xl text-center">Iniciar Sesión</h1>
 
