@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { useSupabaseAuth } from "../features/auth/hooks/useSupabaseAuth";
 import { ErrorMessage } from "../components/ui/errorMessage/ErrorMessage";
-
+import { FaArrowLeft } from "react-icons/fa";
 
 export const ForgotPage = () => {
   const [email, setEmail] = useState("");
@@ -26,9 +26,12 @@ export const ForgotPage = () => {
   return (
     <div className="min-h-dvh flex items-center justify-center bg-gray-950 p-4">
       <div className="w-full max-w-md bg-gray-900 border border-gray-800 p-6 rounded-lg shadow-xl text-white">
-        <h1 className="text-2xl font-bold text-center mb-2">Recuperar Contraseña</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">
+          Recuperar Contraseña
+        </h1>
         <p className="text-sm text-gray-400 text-center mb-6">
-          Ingresa tu correo registrado para recibir un enlace de restablecimiento.
+          Ingresa tu correo registrado para recibir un enlace de
+          restablecimiento.
         </p>
 
         {message ? (
@@ -44,7 +47,9 @@ export const ForgotPage = () => {
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Correo Electrónico</label>
+              <label className="block text-xs text-gray-400 mb-1">
+                Correo Electrónico
+              </label>
               <input
                 type="email"
                 required
@@ -64,10 +69,13 @@ export const ForgotPage = () => {
             >
               {loading ? "Enviando..." : "Enviar Enlace"}
             </button>
-
             <div className="text-center mt-2">
-              <Link to="/login" className="text-xs text-gray-400 hover:text-white transition-colors">
-                ← Volver al login
+              <Link
+                to="/login"
+                className="mx-auto flex items-center gap-1 text-xs text-gray-300 hover:text-white transition-colors w-fit bg-gray-800 rounded-md p-2"
+              >
+                <FaArrowLeft />
+                <p>Volver al login</p>
               </Link>
             </div>
           </form>

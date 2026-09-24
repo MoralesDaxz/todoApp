@@ -31,14 +31,14 @@ export const RegisterForm = ({
   };
 
   return (
-    <section className="pt-20 max-w-4xl">
+    <section className="self-center pt-20 w-full  max-w-2xl px-4">
       <h1 className="font-bold text-4xl text-white text-center">
         Crear Cuenta
       </h1>
 
       <form
         onSubmit={onSubmit}
-        className="flex flex-col gap-4 max-w-sm mx-auto mt-8 w-full"
+        className="flex flex-col gap-4 mx-auto mt-8 w-full"
       >
         {errorMessage && (
           <div className="bg-red-950/70 border border-red-800 text-red-300 text-sm p-3 rounded-md text-center">
