@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AppRouter } from "./App.router";
 import { OfflineBanner } from "./components/ui/offlineBanner/OfflineBanner";
 import { Toaster } from "./components/ui/chadCn/sonner";
+import { Footer } from "./components/ui/footer/Footer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,7 +24,7 @@ const persister = createAsyncStoragePersister({
 });
 const App = () => {
   return (
-    <main className="min-h-dvh max-w-4xl mx-auto px-4 pt-4 flex flex-col">
+    <main className="min-h-dvh max-w-4xl mx-auto flex flex-col">
       <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{ persister }}
@@ -33,6 +34,7 @@ const App = () => {
             <AppRouter />
             <Toaster richColors position="bottom-right" />
             <OfflineBanner />
+            <Footer/>
           </AuthProvider>
         </BrowserRouter>
       </PersistQueryClientProvider>

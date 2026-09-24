@@ -17,10 +17,6 @@ export const AppRouter = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login", { replace: true });
-      return;
-    }
 
     const {
       data: { subscription },
