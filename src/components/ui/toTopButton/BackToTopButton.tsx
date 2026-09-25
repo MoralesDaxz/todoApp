@@ -27,8 +27,6 @@ export function BackToTopButton({
     const target = container ?? window;
     target.scrollTo({ top: 0, behavior: "smooth" });
   };
-  console.log(isVisible);
-  
 
   return (
     <button
