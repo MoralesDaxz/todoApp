@@ -13,9 +13,9 @@ type BackToTopButtonProps = {
 };
 
 export function BackToTopButton({
-  threshold = 500,
+  threshold = 300,
   container = null,
-  className = "fixed bottom-6 right-6 z-60 bg-gray-200 hover:bg-blue-900 text-gray-300 hover:text-white p-1 rounded-full shadow-lg transition-colors animate-pulse",
+  className = "fixed bottom-4 right-1/2 z-80 bg-gray-200 hover:bg-blue-900 text-gray-300 hover:text-white p-1 rounded-full shadow-lg transition-colors animate-pulse",
 }: BackToTopButtonProps) {
   // Este componente SOLO se re-renderiza cuando cruza el umbral,
   // no en cada pixel de scroll.
@@ -27,6 +27,8 @@ export function BackToTopButton({
     const target = container ?? window;
     target.scrollTo({ top: 0, behavior: "smooth" });
   };
+  console.log(isVisible);
+  
 
   return (
     <button

@@ -13,7 +13,6 @@ import { Link } from "react-router";
 import { formatRelativeTime } from "../../../utils/date";
 import { FilteredLists } from "./FilteredLists";
 import { MiniListTasksProgressBar } from "./MiniListTasksProgressBar";
-import { useScrollThreshold } from "../../../../src/components/hooks/ControlDisplay/useScrollThreshold";
 import { BackToTopButton } from "../../../../src/components/ui/toTopButton/BackToTopButton";
 import { SpinnerLoader } from "../../../components/ui/loader/SpinnerLoader";
 
@@ -33,7 +32,6 @@ export const Lists: FC<Prop> = ({ pickList }) => {
   const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
     null,
   );
-  const controlScroll = useScrollThreshold(400, scrollContainer);
   const sortedLists = [...lists].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
@@ -54,14 +52,13 @@ export const Lists: FC<Prop> = ({ pickList }) => {
           key={pickList ? "myLists" : "sharedLists"}
           className="relative"
         >
-          <span className="-z-10 absolute -top-7.5 bg-gray-900 border border-gray-700  text-gray-400 px-3 py-1.5 rounded-md">
+          <span className="-z-10 absolute -top-7.5 bg-gray-900 border border-gray-700 text-gray-400 px-3 py-1.5 rounded-md">
             <p className="text-xs">Listas: {listsMap[pickList].length}</p>
           </span>
           <section
             ref={setScrollContainer}
-            className="z-20 grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-3 max-h-dvh overflow-auto scrollbar-thin  scrollbar-thumb-gray-500 "
+            className="z-20 grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-3 md:gap-1 max-h-dvh overflow-y-auto overflow-x-hidden scrollbar-thin  scrollbar-thumb-gray-500 "
           >
-            {controlScroll && <BackToTopButton className="" />}
             {listsMap[pickList].length > 0 ? (
               listsMap[pickList].map((list: ListItem) => {
                 const isOwner = list.owner_id === user?.id;

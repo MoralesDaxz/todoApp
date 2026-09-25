@@ -7,17 +7,15 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 import { FiShare2 } from "react-icons/fi";
 import { FaUsers } from "react-icons/fa";
 import { ShareListModal } from "../features/todos/components/ShareListModal";
-
 import { ModalMembersInList } from "../features/todos/components/ModalMembersInList";
-
 import { FilteredTodos } from "../features/todos/components/FilteredTodos";
 import { ErrorMessage } from "../components/ui/errorMessage/ErrorMessage";
 import LogUser from "../components/layout/userMenu/LogUser";
+import { BackToTopButton } from "../components/ui/toTopButton/BackToTopButton";
 
 type FilterStatus = "all" | "pending" | "confirmed" | "mine";
 
 export const ToDo = () => {
-  
   const { listId } = useParams<{ listId: string }>();
   const { user } = useAuth();
   const { lists } = useLists();
@@ -54,12 +52,12 @@ export const ToDo = () => {
 
     setNewTaskText("");
   };
-
+  //min-h-dvh overflow-y-auto overflow-x-hidden
   return (
-    <>
-      <section className="pt-6 flex flex-col px-4 mx-auto w-full max-w-2xl ">
+    <div>
+      <section className="flex flex-col px-4 mx-auto w-full max-w-2xl min-h-dvh z-20">
         <Link
-          className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80"
+          className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80 z-20"
           to={"/dashboard"}
         >
           <MdKeyboardArrowLeft className="w-4 h-4 text-gray-300" />
@@ -67,7 +65,7 @@ export const ToDo = () => {
         </Link>
         <LogUser />
 
-        <div className="absolute top-1 right-12 bg-gray-900 rounded-full cursor-pointer p-2 hover:bg-gray-800 transition-colors">
+        <div className="absolute top-1 right-12 bg-gray-900 rounded-full cursor-pointer p-2 hover:bg-gray-800 transition-colors z-20">
           <FaUsers
             className="h-5 w-5 text-gray-300 hover:text-white"
             onClick={() => setIsMembersModalOpen(true)}
@@ -76,7 +74,7 @@ export const ToDo = () => {
         </div>
 
         {isOwner && (
-          <div className="absolute top-1 right-22 bg-gray-900 rounded-full cursor-pointer p-2 hover:bg-gray-800 transition-colors">
+          <div className="absolute top-1 right-22 bg-gray-900 rounded-full cursor-pointer p-2 hover:bg-gray-800 transition-colors z-20">
             <FiShare2
               className="h-5 w-5 text-gray-300 hover:text-white"
               onClick={() => setIsShareModalOpen(true)}
@@ -144,6 +142,7 @@ export const ToDo = () => {
           )}
         </div>
       </section>
-    </>
+      <BackToTopButton />
+    </div>
   );
 };

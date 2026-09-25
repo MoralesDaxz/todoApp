@@ -46,7 +46,7 @@ export const LoginForm = ({
   return (
     <>
       {loading && <StepLoader steps={LOGIN_STEPS} intervalMs={350} />}
-      <section className="pt-20 w-full max-w-2xl px-4 self-center">
+      <section className="pt-20 w-full max-w-2xl px-4 self-center min-h-dvh">
         <h1 className="font-bold text-4xl text-center">Iniciar Sesión</h1>
 
         <div className="flex justify-between self-center gap-3 mt-6 bg-gray-900 p-1 rounded-md border border-gray-700">
