@@ -24,7 +24,7 @@ export const ForgotPage = () => {
   };
 
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-gray-950 p-4">
+    <div className="min-h-dvh flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-gray-900 border border-gray-800 p-6 rounded-lg shadow-xl text-white">
         <h1 className="text-2xl font-bold text-center mb-2">
           Recuperar Contraseña
@@ -65,14 +65,14 @@ export const ForgotPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-[#1163c2] hover:bg-blue-500 font-medium text-sm rounded-md transition-colors disabled:opacity-50 mt-2"
+              className="w-fit px-4 py-3 bg-[#1163c2] hover:bg-blue-500 font-medium text-sm rounded-md transition-colors disabled:opacity-50 mt-2 mx-auto"
             >
               {loading ? "Enviando..." : "Enviar Enlace"}
             </button>
-            <div className="text-center mt-2">
+            <div className="text-center mt-6">
               <Link
                 to="/login"
-                className="mx-auto flex items-center gap-1 text-xs text-gray-300 hover:text-white transition-colors w-fit bg-gray-800 rounded-md p-2"
+                className=" flex items-center gap-1 text-xs text-gray-300 hover:text-white transition-colors w-fit bg-gray-800 rounded-md p-2"
               >
                 <FaArrowLeft />
                 <p>Volver al login</p>

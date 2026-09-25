@@ -7,10 +7,10 @@ import type { Todo as TodoType } from "../../types";
 import { useTodos } from "../hooks/useTodos";
 import { useParams } from "react-router";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
-
 import { formatRelativeTime } from "../../../utils/date";
 import { useState } from "react";
-import { sleep } from "../../../../src/utils/sleep";
+import { sleep } from "../../../utils/sleep";
+
 
 interface Props {
   todos: TodoType[];
@@ -23,6 +23,7 @@ export const Todos = ({ todos, isEditor }: Props) => {
   const { pendingMutation, confirmMutation, deleteMutation } = useTodos(
     listId || null,
   );
+
   const [loadingTodoId, setLoadingTodoId] = useState<string | null>(null);
   const borderColors = {
     pending: "border-[#e8e7e9c9] shadow shadow-[#e8e7e9c9]",
@@ -30,7 +31,6 @@ export const Todos = ({ todos, isEditor }: Props) => {
     confirmed: "border-[#4ff00fd2] shadow shadow-[#4ff00fd2]",
   };
   const handleMutation = async (id: string, status: string) => {
-    // Si ya está procesando una acción en este item, evitamos clics repetidos
     if (loadingTodoId === id) return;
 
     setLoadingTodoId(id);
@@ -60,6 +60,7 @@ export const Todos = ({ todos, isEditor }: Props) => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+      
       >
         <AnimatePresence mode="popLayout">
           {todos.map((todo) => {
@@ -121,6 +122,7 @@ export const Todos = ({ todos, isEditor }: Props) => {
           })}
         </AnimatePresence>
       </motion.ul>
+     
     </>
   );
 };

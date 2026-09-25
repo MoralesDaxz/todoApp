@@ -24,16 +24,16 @@ const persister = createAsyncStoragePersister({
 });
 const App = () => {
   return (
-    <main className="min-h-dvh max-w-4xl mx-auto flex flex-col">
+    <main className="relative min-h-dvh max-w-3xl mx-auto flex flex-col pb-20">
       <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{ persister }}
       >
         <BrowserRouter>
           <AuthProvider>
-            <AppRouter />
             <Toaster richColors position="bottom-right" />
             <OfflineBanner />
+            <AppRouter />
             <Footer/>
           </AuthProvider>
         </BrowserRouter>

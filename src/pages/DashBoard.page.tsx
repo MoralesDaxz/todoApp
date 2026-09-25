@@ -4,7 +4,6 @@ import { CreateOrJoinList } from "../features/todos/components/CreateOrJoinList"
 import { Lists } from "../features/todos/components/Lists";
 import LogUser from "../components/layout/userMenu/LogUser";
 
-
 export const DashBoard = () => {
   const [pickList, setPickList] = useState<"myLists" | "sharedLists">(
     "myLists",
