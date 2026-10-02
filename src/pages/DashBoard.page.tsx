@@ -10,7 +10,7 @@ export const DashBoard = () => {
   );
 
   return (
-    <section className="px-4">
+    <section className="px-4 pt-20">
       <LogUser />
       <h1 className="text-center text-4xl my-8 font-medium">Gestiones</h1>
       <CreateOrJoinList />
