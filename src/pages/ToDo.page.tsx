@@ -55,7 +55,7 @@ export const ToDo = () => {
   //min-h-dvh overflow-y-auto overflow-x-hidden
   return (
     <div>
-      <section className="flex flex-col px-4 mx-auto w-full max-w-2xl min-h-dvh z-20">
+      <section className="flex flex-col px-4 mx-auto w-full max-w-2xl min-h-dvh z-20 pt-20">
         <Link
           className="text-xs text-gray-300 font-medium absolute top-1 left-2 flex items-center bg-gray-900 p-2 rounded-md hover:opacity-80 z-20"
           to={"/dashboard"}

@@ -24,9 +24,9 @@ export const ForgotPage = () => {
   };
 
   return (
-    <div className="min-h-dvh flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-gray-900 border border-gray-800 p-6 rounded-lg shadow-xl text-white">
-        <h1 className="text-2xl font-bold text-center mb-2">
+    <div className=" flex justify-center py-20 px-4">
+      <div className="w-full max-w-md bg-gray-900 border border-gray-800 p-6 rounded-lg shadow-xl text-gray-200 ">
+        <h1 className="text-2xl font-bold text-center my-6">
           Recuperar Contraseña
         </h1>
         <p className="text-sm text-gray-400 text-center mb-6">
@@ -72,7 +72,7 @@ export const ForgotPage = () => {
             <div className="text-center mt-6">
               <Link
                 to="/login"
-                className=" flex items-center gap-1 text-xs text-gray-300 hover:text-white transition-colors w-fit bg-gray-800 rounded-md p-2"
+                className=" flex items-center gap-1 text-xs text-gray-300 hover:text-white transition-colors w-fit bg-gray-800 rounded-md p-2 mt-4"
               >
                 <FaArrowLeft />
                 <p>Volver al login</p>
